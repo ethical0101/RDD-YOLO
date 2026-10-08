@@ -1,0 +1,80 @@
+{
+  "experiment": "rdd",
+  "title": "Experiment B - RDD-YOLO (SimAM + GhostConv + Bilinear)",
+  "run_name": "rdd_yolo26n_ext",
+  "architecture_yaml": "models/architectures/yolo26-rdd.yaml",
+  "scale": "n",
+  "ultralytics_version": "8.4.174",
+  "started_utc": "2026-10-08T08:00:48.395408+00:00",
+  "hardware": {
+    "os": "Windows 11",
+    "python": "3.13.4",
+    "cpu_cores": 16,
+    "ram_gb": 15.7,
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "vram_gb": 4.0,
+    "torch_version": "2.14.1+cu130",
+    "cuda_version": "13.0"
+  },
+  "hardware_recommendation": {
+    "device": "0",
+    "batch": 8,
+    "imgsz": 640,
+    "workers": 5,
+    "amp": true,
+    "model_scale": "n",
+    "reason": "NVIDIA GeForce RTX 3050 Laptop GPU with 4.0 GB VRAM: batch 8, AMP on, scale 'n'."
+  },
+  "args": {
+    "experiment": "rdd",
+    "scale": null,
+    "data": "E:\\RDD-YOLO\\dataset\\processed\\rdd2022_extended\\data.yaml",
+    "epochs": 25,
+    "imgsz": 640,
+    "batch": 16,
+    "workers": 6,
+    "device": null,
+    "patience": 10,
+    "fraction": 1.0,
+    "seed": 0,
+    "name": "rdd_yolo26n_ext",
+    "no_pretrained": false,
+    "resume": null,
+    "cache": false,
+    "non_deterministic": true,
+    "init_weights": "E:\\RDD-YOLO\\models\\weights\\rdd_yolo26n_best.pt",
+    "close_mosaic": 5
+  },
+  "effective": {
+    "batch": 16,
+    "workers": 6,
+    "device": "0",
+    "amp": true
+  },
+  "initialisation": {
+    "fine_tuned_from": "E:\\RDD-YOLO\\models\\weights\\rdd_yolo26n_best.pt"
+  },
+  "train_time_hours": 1.863,
+  "finished_utc": "2026-10-08T09:52:34.530525+00:00",
+  "resumed": false,
+  "results": {
+    "epochs_completed": 25,
+    "best_epoch_val": {
+      "epoch": 24,
+      "precision": 0.64438,
+      "recall": 0.51674,
+      "f1": 0.5735443730191538,
+      "mAP50": 0.5672,
+      "mAP50_95": 0.28344
+    },
+    "last_epoch_val": {
+      "epoch": 25,
+      "precision": 0.64393,
+      "recall": 0.51762,
+      "f1": 0.5739073593043778,
+      "mAP50": 0.56659,
+      "mAP50_95": 0.28266
+    }
+  }
+}

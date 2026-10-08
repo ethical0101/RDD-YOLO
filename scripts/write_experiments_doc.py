@@ -133,6 +133,37 @@ def main() -> None:
               "repeated seeds."]
         L += [""]
 
+    # ---------------- Experiment C (extended data fine-tune)
+    c_info = load(EXPERIMENTS_DIR / "rdd_yolo26n_ext" / "run_info.json")
+    if c_info:
+        stats = load(ROOT / "dataset" / "processed" / "rdd2022_extended" / "dataset_stats.json") or {}
+        src = stats.get("images_per_source", {})
+        L += ["## Experiment C — RDD-YOLO fine-tuned on extended data", "",
+              "Starting from the Experiment B checkpoint, RDD-YOLO26n was fine-tuned for "
+              f"{c_info['results']['epochs_completed']} epochs ({c_info['train_time_hours']:.2f} h, "
+              f"{c_info['hardware'].get('gpu_name')}, non-deterministic CUDA kernels for ~27 % faster training) on "
+              f"{stats.get('images', {}).get('train', 'n/a'):,} training images:", "",
+              "| Source | Train | Val | Test |", "|---|---|---|---|"]
+        for k, v in src.items():
+            t = v.get("test", v.get("test_rdd_new", v.get("test_external", 0)))
+            L.append(f"| {k} | {v.get('train', 0):,} | {v.get('val', 0):,} | {t:,} |")
+        L += ["", "External pothole sets (Roboflow exports, CC BY 4.0) contribute **only the pothole class (D40)**; "
+              "images that also carry their generic \"Crack\" label are excluded "
+              f"({stats.get('skipped', {}).get('egypt_rdd: image has generic Crack label', 0):,} images) because those cracks "
+              "cannot be mapped to D00/D10/D20. The original test split is unchanged.", "",
+              "| Test set | Metric | Exp B (before) | Exp C (after) | Δ (pp) |", "|---|---|---|---|---|"]
+        for tag, label in (("test", "Original RDD2022 test"), ("test_rdd_new", "Norway + China_Drone held-out"),
+                           ("test_external", "Ground-level potholes (external)")):
+            b = load(EXPERIMENTS_DIR / "rdd_yolo26n" / f"eval_{tag}" / "metrics.json")
+            c = load(EXPERIMENTS_DIR / "rdd_yolo26n_ext" / f"eval_{tag}" / "metrics.json")
+            if not (b and c):
+                continue
+            for k, lbl in (("precision", "Precision"), ("recall", "Recall"), ("mAP50", "mAP@50"), ("mAP50_95", "mAP@50-95")):
+                L.append(f"| {label} ({c['images']} imgs) | {lbl} | {pct(b['overall'][k])} | {pct(c['overall'][k])} | "
+                         f"{100 * (c['overall'][k] - b['overall'][k]):+.2f} |")
+        L += ["", "Experiment C is the model served by the application (`models/weights/rdd_yolo26n_ext_best.pt`). "
+              "Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.", ""]
+
     L += ["## Generated artefacts", "",
           "* `experiments/<run>/results.csv` / `results.png` — per-epoch losses (box, cls, L1) and val P/R/mAP",
           "* `experiments/<run>/eval_test/` — confusion matrix (raw + normalised), PR / P / R / F1 curves, prediction mosaics, `metrics.json`",

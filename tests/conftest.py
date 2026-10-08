@@ -27,7 +27,7 @@ SAMPLE_DIRS = [ROOT / "dataset" / "processed" / "rdd2022_yolo" / "images" / "tes
 
 def find_weights() -> Path | None:
     cands = [os.environ.get("RDD_TEST_WEIGHTS")] if os.environ.get("RDD_TEST_WEIGHTS") else []
-    cands += [ROOT / "models/weights/rdd_yolo26n_best.pt", ROOT / "models/weights/baseline_yolo26n_best.pt",
+    cands += [ROOT / "models/weights/rdd_yolo26n_ext_best.pt", ROOT / "models/weights/rdd_yolo26n_best.pt", ROOT / "models/weights/baseline_yolo26n_best.pt",
               ROOT / "experiments/smoke_rdd/weights/best.pt"]
     for c in cands:
         if c and Path(c).exists():

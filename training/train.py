@@ -126,6 +126,11 @@ def main() -> None:
     ap.add_argument("--no-pretrained", action="store_true", help="Train every layer from scratch")
     ap.add_argument("--resume", type=Path, default=None, help="Resume from a last.pt checkpoint")
     ap.add_argument("--cache", default=False, help="Ultralytics cache option: False/ram/disk")
+    ap.add_argument("--non-deterministic", action="store_true",
+                    help="Allow non-deterministic CUDA kernels (faster, esp. bilinear upsampling backward)")
+    ap.add_argument("--init-weights", type=Path, default=None,
+                    help="Fine-tune: start from this trained checkpoint instead of the COCO-backbone init")
+    ap.add_argument("--close-mosaic", type=int, default=10)
     args = ap.parse_args()
 
     register_custom_modules()
@@ -157,8 +162,14 @@ def main() -> None:
     print(f"Using scale={scale} batch={batch} imgsz={args.imgsz} workers={workers} device={device} amp={rec.amp}")
 
     yaml_path = ARCH_DIR / exp["yaml"]
-    init_ckpt = EXPERIMENTS_DIR / "_init" / f"{name}_init.pt"
-    init_report = build_initial_checkpoint(yaml_path, scale, init_ckpt, not args.no_pretrained, args.seed)
+    if args.init_weights:  # fine-tuning from an already trained model
+        if not args.init_weights.exists():
+            sys.exit(f"--init-weights not found: {args.init_weights}")
+        init_ckpt = args.init_weights
+        init_report = {"fine_tuned_from": str(args.init_weights)}
+    else:
+        init_ckpt = EXPERIMENTS_DIR / "_init" / f"{name}_init.pt"
+        init_report = build_initial_checkpoint(yaml_path, scale, init_ckpt, not args.no_pretrained, args.seed)
     print(f"Initialisation: {init_report}")
 
     model = YOLO(str(init_ckpt), task="detect")
@@ -175,10 +186,10 @@ def main() -> None:
     }, indent=2))
     model.train(
         data=str(args.data), epochs=args.epochs, imgsz=args.imgsz, batch=batch, workers=workers, device=device,
-        amp=rec.amp, patience=args.patience, fraction=args.fraction, seed=args.seed, deterministic=True,
+        amp=rec.amp, patience=args.patience, fraction=args.fraction, seed=args.seed, deterministic=not args.non_deterministic,
         project=str(EXPERIMENTS_DIR), name=name, exist_ok=True, cache=args.cache, plots=True, val=True,
         pretrained=True,  # use the weights of the init checkpoint (COCO backbone + seeded random rest)
-        optimizer="auto", cos_lr=False, close_mosaic=10,
+        optimizer="auto", cos_lr=False, close_mosaic=args.close_mosaic,
     )
     finalize(run_dir, time.time() - t0)
 

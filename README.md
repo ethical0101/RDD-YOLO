@@ -131,6 +131,18 @@ Measured on the held-out test split (2,023 images), 40 epochs each, RTX 3050 Lap
 RDD-YOLO is 3.6 % smaller but 8 % slower. The paper's gains (YOLOv8x, 180 epochs) were not reproduced at
 nano scale / 40 epochs — reported as measured.
 
+**Experiment C — extended data (the model served by the app).** RDD-YOLO26n fine-tuned for 25 more epochs
+(1.9 h on the RTX 3050) on 21,477 images: the original set + RDD2022 Norway & China_Drone + two public
+ground-level pothole datasets (pothole class only). Measured before → after:
+
+| Test set | mAP@50 | Recall |
+|---|---|---|
+| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % → **60.50 %** | 55.28 % → **57.19 %** |
+| Norway + China_Drone held-out (532 imgs) | 12.92 % → **33.37 %** | 20.67 % → **34.68 %** |
+| Ground-level potholes, external (221 imgs) | 18.34 % → **44.61 %** | 19.99 % → **45.81 %** |
+
+Reproduce with `scripts	rain_extended.ps1`.
+
 See **[docs/experiments.md](docs/experiments.md)** for per-class results and details — it contains the measured numbers of both experiments
 (written from `experiments/comparison.json` after the runs finished) and how to interpret them. The same
 results, curves, confusion matrices and PR curves are shown live on the dashboard's *Model* and
@@ -234,7 +246,7 @@ Tests use an isolated temporary database and CPU inference, so they can run whil
 * Model, data and hardware differ from the RDD-YOLO paper (YOLOv8x, all RDD2022 countries, 180 epochs, RTX 4090).
   Our numbers are **not** comparable to the paper's and are reported only for our own setup.
 * The official RDD2022 test set has no public labels; our "test" split is a held-out 10 % of the labelled data.
-* **Domain gap.** RDD2022 images come from vehicle-mounted cameras looking down the road; the median pothole
+* **Domain gap** (reduced but not eliminated by Experiment C). RDD2022 images come from vehicle-mounted cameras looking down the road; the median pothole
   covers only 0.6 % of the image (only 1.6 % of training potholes cover ≥ 15 %). Ground-level, wide-angle or
   stock photos where one pothole fills the frame are largely outside the training distribution and are often
   missed. Use road photos taken from a vehicle (or the held-out samples in `demo_images/`) for demonstrations.

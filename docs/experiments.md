@@ -53,6 +53,37 @@ FPS measured on NVIDIA GeForce RTX 3050 Laptop GPU over 200 test images after 20
 * **Speed:** end-to-end inference FPS -8.1 % (80.1 vs 87.2) despite fewer FLOPs — likely because SimAM and bilinear interpolation are memory-bound element-wise operations that FLOP counts do not capture.
 * **Conclusion for this setup:** the paper's gains (reported for YOLOv8x, 180 epochs, all countries) were not reproduced at nano scale with 40 epochs; RDD-YOLO matches the baseline's accuracy with a smaller model but runs slower. A fair test of the paper's claim would need the larger scale, the full schedule and repeated seeds.
 
+## Experiment C — RDD-YOLO fine-tuned on extended data
+
+Starting from the Experiment B checkpoint, RDD-YOLO26n was fine-tuned for 25 epochs (1.86 h, NVIDIA GeForce RTX 3050 Laptop GPU, non-deterministic CUDA kernels for ~27 % faster training) on 21,477 training images:
+
+| Source | Train | Val | Test |
+|---|---|---|---|
+| rdd2022_original5 | 16,156 | 2,017 | 2,023 |
+| rdd2022_China_Drone | 1,688 | 211 | 211 |
+| rdd2022_Norway | 2,564 | 320 | 321 |
+| egypt_rdd | 969 | 127 | 121 |
+| potholes_rf | 100 | 100 | 100 |
+
+External pothole sets (Roboflow exports, CC BY 4.0) contribute **only the pothole class (D40)**; images that also carry their generic "Crack" label are excluded (2,242 images) because those cracks cannot be mapped to D00/D10/D20. The original test split is unchanged.
+
+| Test set | Metric | Exp B (before) | Exp C (after) | Δ (pp) |
+|---|---|---|---|---|
+| Original RDD2022 test (2023 imgs) | Precision | 63.08 | 62.65 | -0.43 |
+| Original RDD2022 test (2023 imgs) | Recall | 55.28 | 57.19 | +1.92 |
+| Original RDD2022 test (2023 imgs) | mAP@50 | 59.46 | 60.50 | +1.04 |
+| Original RDD2022 test (2023 imgs) | mAP@50-95 | 30.30 | 30.31 | +0.00 |
+| Norway + China_Drone held-out (532 imgs) | Precision | 26.87 | 49.03 | +22.16 |
+| Norway + China_Drone held-out (532 imgs) | Recall | 20.67 | 34.68 | +14.01 |
+| Norway + China_Drone held-out (532 imgs) | mAP@50 | 12.92 | 33.37 | +20.44 |
+| Norway + China_Drone held-out (532 imgs) | mAP@50-95 | 5.24 | 15.24 | +9.99 |
+| Ground-level potholes (external) (221 imgs) | Precision | 36.39 | 55.98 | +19.58 |
+| Ground-level potholes (external) (221 imgs) | Recall | 19.99 | 45.81 | +25.82 |
+| Ground-level potholes (external) (221 imgs) | mAP@50 | 18.34 | 44.61 | +26.27 |
+| Ground-level potholes (external) (221 imgs) | mAP@50-95 | 7.19 | 18.51 | +11.33 |
+
+Experiment C is the model served by the application (`models/weights/rdd_yolo26n_ext_best.pt`). Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.
+
 ## Generated artefacts
 
 * `experiments/<run>/results.csv` / `results.png` — per-epoch losses (box, cls, L1) and val P/R/mAP

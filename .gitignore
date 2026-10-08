@@ -27,6 +27,7 @@ experiments/logs/
 *.onnx
 !models/weights/baseline_yolo26n_best.pt
 !models/weights/rdd_yolo26n_best.pt
+!models/weights/rdd_yolo26n_ext_best.pt
 
 # Local tool config
 .claude/

@@ -10,8 +10,8 @@ from ..core.config import get_settings
 
 log = logging.getLogger(__name__)
 
-# Preference when no checkpoint is configured: the RDD-YOLO model first, then the baseline.
-_PREFERRED = ["rdd_yolo26n_best.pt", "rdd_yolo26s_best.pt", "baseline_yolo26n_best.pt", "baseline_yolo26s_best.pt"]
+# Preference when no checkpoint is configured: extended-data RDD-YOLO (Exp C), RDD-YOLO (Exp B), baseline.
+_PREFERRED = ["rdd_yolo26n_ext_best.pt", "rdd_yolo26n_best.pt", "rdd_yolo26s_best.pt", "baseline_yolo26n_best.pt", "baseline_yolo26s_best.pt"]
 
 
 class ModelService:

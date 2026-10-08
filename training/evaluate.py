@@ -61,6 +61,7 @@ def main() -> None:
     ap.add_argument("--batch", type=int, default=8)
     ap.add_argument("--device", default=None)
     ap.add_argument("--speed-images", type=int, default=200)
+    ap.add_argument("--tag", default=None, help="Output folder name eval_<tag> (default: the split name)")
     args = ap.parse_args()
 
     register_custom_modules()
@@ -71,13 +72,14 @@ def main() -> None:
     if not weights.exists():
         sys.exit(f"Checkpoint not found: {weights}")
     run_dir = weights.parent.parent if weights.parent.name == "weights" else EXPERIMENTS_DIR / weights.stem
-    out_dir = run_dir / f"eval_{args.split}"
+    tag = args.tag or args.split
+    out_dir = run_dir / f"eval_{tag}"
     device = args.device or ("0" if torch.cuda.is_available() else "cpu")
 
     model = YOLO(str(weights), task="detect")
     print(f"Evaluating {weights} on '{args.split}' split ({device})")
     m = model.val(data=str(args.data), split=args.split, imgsz=args.imgsz, batch=args.batch, device=device,
-                  project=str(run_dir), name=f"eval_{args.split}", exist_ok=True, plots=True, verbose=True)
+                  project=str(run_dir), name=f"eval_{tag}", exist_ok=True, plots=True, verbose=True)
 
     box = m.box
     p, r = float(box.mp), float(box.mr)
@@ -101,13 +103,16 @@ def main() -> None:
         gflops = round(float(get_flops(model.model, args.imgsz)), 2)
     except Exception:
         gflops = None
-    img_dir = Path(args.data).parent / "images" / args.split
+    import yaml as _yaml
+
+    split_dir = _yaml.safe_load(Path(args.data).read_text()).get(args.split, f"images/{args.split}")
+    img_dir = Path(args.data).parent / split_dir
     imgs = sorted(img_dir.glob("*.*"))
     speed = benchmark_speed(model, imgs, args.imgsz, device, n=args.speed_images)
 
     result = {
         "weights": str(weights.relative_to(ROOT) if weights.is_relative_to(ROOT) else weights),
-        "split": args.split, "dataset": str(args.data), "images": len(imgs), "imgsz": args.imgsz,
+        "split": args.split, "tag": tag, "dataset": str(args.data), "images": len(imgs), "imgsz": args.imgsz,
         "ultralytics_version": ul_version, "evaluated_utc": datetime.now(timezone.utc).isoformat(),
         "gpu": torch.cuda.get_device_name(0) if device != "cpu" and torch.cuda.is_available() else "CPU",
         "overall": {"precision": p, "recall": r, "f1": 2 * p * r / (p + r) if p + r else 0.0,
