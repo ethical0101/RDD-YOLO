@@ -144,7 +144,7 @@ export default function VideoPage() {
                         <th className="px-3 py-2 font-medium">Conf.</th><th className="px-3 py-2 font-medium">Severity</th><th className="px-3 py-2 font-medium">Location</th></tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {job.detections.map((d) => (
+                      {[...job.detections].sort((a, b) => (a.video_time_s ?? 0) - (b.video_time_s ?? 0)).map((d) => (
                         <tr key={d.id} className="cursor-pointer hover:bg-slate-50" onClick={() => seek(d.video_time_s)}>
                           <td className="px-5 py-2 font-mono text-xs">{d.video_time_s?.toFixed(2)} s</td>
                           <td className="px-3 py-1.5">{d.crop_url && <img src={d.crop_url} className="h-9 w-9 rounded object-cover" alt="" />}</td>

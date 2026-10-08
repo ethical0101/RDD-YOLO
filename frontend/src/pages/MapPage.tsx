@@ -70,7 +70,12 @@ function Layers_({ fc, cluster, heat, focus, onReady }: {
       const focused = focus !== null ? fc.features.filter((f) => f.properties.inference_id === focus) : []
       const src = focused.length ? focused : fc.features
       map.fitBounds(L.latLngBounds(src.map((f) => [f.geometry.coordinates[1], f.geometry.coordinates[0]])), { maxZoom: 17, padding: [40, 40] })
-      if (focused.length) setTimeout(() => markers.get(focused[0].properties.id)?.openPopup(), 400)
+      if (focused.length) {
+        const m = markers.get(focused[0].properties.id)
+        const g = group as L.MarkerClusterGroup
+        // a clustered marker is not on the map until its cluster is expanded
+        if (m) setTimeout(() => (typeof g.zoomToShowLayer === 'function' ? g.zoomToShowLayer(m, () => m.openPopup()) : m.openPopup()), 400)
+      }
       fitted.current = true
     }
     onReady(markers, map, group)

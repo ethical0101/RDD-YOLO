@@ -76,7 +76,7 @@ export default function Detect() {
               onClick={() => inputRef.current?.click()}
               className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center hover:border-slate-400 hover:bg-slate-50">
               <ImageUp className="h-8 w-8 text-slate-400" />
-              <div className="mt-2 text-sm font-medium text-slate-700">{file ? file.name : 'Drop an image or click to browse'}</div>
+              <div className="mt-2 break-all text-sm font-medium text-slate-700">{file ? file.name : 'Drop an image or click to browse'}</div>
               <div className="text-xs text-slate-500">JPEG / PNG / WebP</div>
             </div>
             <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/bmp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />

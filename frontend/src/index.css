@@ -27,3 +27,7 @@ body { background: var(--color-page); color: #0f172a; -webkit-font-smoothing: an
   font-size: 10px; font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,.35);
 }
 .leaflet-popup-content { margin: 10px 12px; }
+
+/* Grid items default to min-width:auto, which lets wide tables/images stretch a column past the
+   viewport on phones. Allow them to shrink; wide content scrolls inside its own container instead. */
+.grid > * { min-width: 0; }
