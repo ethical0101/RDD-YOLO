@@ -1,0 +1,75 @@
+{
+  "weights": "experiments\\rdd_yolo26n\\weights\\best.pt",
+  "split": "test",
+  "dataset": "E:\\RDD-YOLO\\dataset\\processed\\rdd2022_yolo\\data.yaml",
+  "images": 2023,
+  "imgsz": 640,
+  "ultralytics_version": "8.4.174",
+  "evaluated_utc": "2026-10-08T05:24:41.873670+00:00",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "overall": {
+    "precision": 0.6308268795493067,
+    "recall": 0.5527592493242955,
+    "f1": 0.5892184504140983,
+    "mAP50": 0.5946209927354273,
+    "mAP50_95": 0.3030223141993939
+  },
+  "per_class": {
+    "D00": {
+      "name": "Longitudinal Crack",
+      "precision": 0.6662668738098043,
+      "recall": 0.6335483870967742,
+      "f1": 0.649495841407189,
+      "mAP50": 0.682237221846665,
+      "mAP50_95": 0.39291686123270314,
+      "instances": 1550
+    },
+    "D10": {
+      "name": "Transverse Crack",
+      "precision": 0.6063264126099696,
+      "recall": 0.5596026490066225,
+      "f1": 0.5820283202972404,
+      "mAP50": 0.5892150779707513,
+      "mAP50_95": 0.2747541996595284,
+      "instances": 906
+    },
+    "D20": {
+      "name": "Alligator Crack",
+      "precision": 0.6690776177538554,
+      "recall": 0.6043521266073195,
+      "f1": 0.6350699486099267,
+      "mAP50": 0.6540348841975334,
+      "mAP50_95": 0.3486905606688574,
+      "instances": 1011
+    },
+    "D40": {
+      "name": "Pothole",
+      "precision": 0.5816366140235979,
+      "recall": 0.41353383458646614,
+      "f1": 0.4833873828729652,
+      "mAP50": 0.45299678692675976,
+      "mAP50_95": 0.19572763523648673,
+      "instances": 665
+    }
+  },
+  "parameters": 2415600,
+  "gflops": 5.81,
+  "model_size_mb": 4.97,
+  "ultralytics_val_speed_ms": {
+    "preprocess": 1.033,
+    "inference": 4.722,
+    "loss": 0.001,
+    "postprocess": 0.927
+  },
+  "speed_benchmark": {
+    "images": 200,
+    "batch": 1,
+    "imgsz": 640,
+    "device": "0",
+    "end_to_end_ms_mean": 12.48,
+    "end_to_end_ms_median": 11.7,
+    "inference_ms_mean": 9.22,
+    "fps_end_to_end": 80.1,
+    "fps_inference_only": 108.4
+  }
+}

@@ -1,0 +1,24 @@
+# RDD-YOLO Python dependencies (verified on Windows 11, Python 3.13, Oct 2026).
+#
+# PyTorch with CUDA must come from the PyTorch index. scripts/setup.ps1 does this:
+#   pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130
+# (CPU-only machines: use --index-url https://download.pytorch.org/whl/cpu)
+
+# Deep learning
+ultralytics==8.4.174
+
+# Backend
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+sqlalchemy==2.1.3
+pydantic-settings==2.15.0
+python-dotenv==1.2.4
+
+# Media / utilities
+imageio-ffmpeg==0.6.0
+psutil==7.2.2
+
+# Testing
+pytest==9.1.1
+httpx==0.28.1

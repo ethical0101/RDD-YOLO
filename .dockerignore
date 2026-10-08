@@ -1,0 +1,11 @@
+.venv
+.cache
+frontend/node_modules
+frontend/dist
+dataset/raw
+dataset/processed
+outputs
+experiments
+models/weights
+.git
+*.docx

@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+*.egg-info/
+.cache/
+
+# Environment
+.env
+
+# Data (download with dataset/download_rdd2022.py; regenerate with prepare_dataset.py)
+dataset/raw/
+dataset/processed/
+
+# Runtime outputs
+outputs/
+!outputs/.gitkeep
+runs/
+
+# Training artefacts: keep results/plots and the two published best checkpoints only
+experiments/**/weights/
+experiments/_init/
+experiments/smoke_rdd/
+experiments/logs/
+*.pt
+*.onnx
+!models/weights/baseline_yolo26n_best.pt
+!models/weights/rdd_yolo26n_best.pt
+
+# Local tool config
+.claude/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Private course report (kept locally, not published)
+*.docx

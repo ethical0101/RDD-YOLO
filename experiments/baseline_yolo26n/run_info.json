@@ -1,0 +1,81 @@
+{
+  "experiment": "baseline",
+  "title": "Experiment A - Baseline YOLO26",
+  "run_name": "baseline_yolo26n",
+  "architecture_yaml": "models/architectures/yolo26-baseline.yaml",
+  "scale": "n",
+  "ultralytics_version": "8.4.174",
+  "started_utc": "2026-10-07T17:46:23.824330+00:00",
+  "hardware": {
+    "os": "Windows 11",
+    "python": "3.13.4",
+    "cpu_cores": 16,
+    "ram_gb": 15.7,
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "vram_gb": 4.0,
+    "torch_version": "2.14.1+cu130",
+    "cuda_version": "13.0"
+  },
+  "hardware_recommendation": {
+    "device": "0",
+    "batch": 8,
+    "imgsz": 640,
+    "workers": 5,
+    "amp": true,
+    "model_scale": "n",
+    "reason": "NVIDIA GeForce RTX 3050 Laptop GPU with 4.0 GB VRAM: batch 8, AMP on, scale 'n'."
+  },
+  "args": {
+    "experiment": "baseline",
+    "scale": "n",
+    "data": "E:\\RDD-YOLO\\dataset\\processed\\rdd2022_yolo\\data.yaml",
+    "epochs": 40,
+    "imgsz": 640,
+    "batch": 16,
+    "workers": 6,
+    "device": null,
+    "patience": 15,
+    "fraction": 1.0,
+    "seed": 0,
+    "name": null,
+    "no_pretrained": false,
+    "resume": null,
+    "cache": false
+  },
+  "effective": {
+    "batch": 16,
+    "workers": 6,
+    "device": "0",
+    "amp": true
+  },
+  "initialisation": {
+    "pretrained_source": "yolo26n.pt",
+    "transferred_tensors": 240,
+    "backbone_tensors": 240,
+    "model_tensors": 708,
+    "not_initialised_from_pretrained": 394
+  },
+  "train_time_hours": 2.311,
+  "finished_utc": "2026-10-07T20:05:04.773852+00:00",
+  "resumed": false,
+  "results": {
+    "epochs_completed": 40,
+    "best_epoch_val": {
+      "epoch": 39,
+      "precision": 0.64757,
+      "recall": 0.56419,
+      "f1": 0.6030113525780683,
+      "mAP50": 0.60666,
+      "mAP50_95": 0.30628
+    },
+    "last_epoch_val": {
+      "epoch": 40,
+      "precision": 0.64941,
+      "recall": 0.56438,
+      "f1": 0.603916683775612,
+      "mAP50": 0.60751,
+      "mAP50_95": 0.30543
+    }
+  }
+}

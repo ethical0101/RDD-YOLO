@@ -1,0 +1,30 @@
+# docker compose up --build   ->  http://localhost:8000
+# Trained weights, the database and outputs are mounted from the host, so the
+# container serves the checkpoints produced by the native training pipeline.
+# (Untested in the development environment - see docker/Dockerfile.)
+services:
+  rdd-yolo:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      # For NVIDIA GPU inference uncomment:
+      # args:
+      #   TORCH_INDEX: https://download.pytorch.org/whl/cu130
+    ports:
+      - "8000:8000"
+    environment:
+      RDD_DATABASE_URL: sqlite:////app/outputs/rdd_yolo.db
+      RDD_CORS_ORIGINS: http://localhost:8000
+    volumes:
+      - ./models/weights:/app/models/weights
+      - ./outputs:/app/outputs
+      - ./experiments:/app/experiments
+      - ./dataset/processed:/app/dataset/processed:ro
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    restart: unless-stopped
