@@ -1,0 +1,76 @@
+{
+  "weights": "experiments\\rdd_yolo26n_ext2\\weights\\best.pt",
+  "split": "test",
+  "tag": "test_rdd_new",
+  "dataset": "dataset\\processed\\rdd2022_extended_v2\\data_test_rdd_new.yaml",
+  "images": 532,
+  "imgsz": 640,
+  "ultralytics_version": "8.4.174",
+  "evaluated_utc": "2026-10-08T15:10:59.717363+00:00",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "overall": {
+    "precision": 0.4919047136380898,
+    "recall": 0.3619349073159956,
+    "f1": 0.4170279349181835,
+    "mAP50": 0.33711519864227985,
+    "mAP50_95": 0.16121080472926894
+  },
+  "per_class": {
+    "D00": {
+      "name": "Longitudinal Crack",
+      "precision": 0.5147297483215783,
+      "recall": 0.3475247524752475,
+      "f1": 0.41491538336255773,
+      "mAP50": 0.3477636573658768,
+      "mAP50_95": 0.16493393550286678,
+      "instances": 1010
+    },
+    "D10": {
+      "name": "Transverse Crack",
+      "precision": 0.5892715108055443,
+      "recall": 0.5205047318611987,
+      "f1": 0.5527575702796667,
+      "mAP50": 0.501384222494363,
+      "mAP50_95": 0.2514609001446264,
+      "instances": 317
+    },
+    "D20": {
+      "name": "Alligator Crack",
+      "precision": 0.4429526562207307,
+      "recall": 0.3333333333333333,
+      "f1": 0.38040332401652127,
+      "mAP50": 0.3455399410386131,
+      "mAP50_95": 0.17069183936995494,
+      "instances": 81
+    },
+    "D40": {
+      "name": "Pothole",
+      "precision": 0.4206649392045059,
+      "recall": 0.2463768115942029,
+      "f1": 0.3107514225206306,
+      "mAP50": 0.1537729736702665,
+      "mAP50_95": 0.0577565438996276,
+      "instances": 69
+    }
+  },
+  "parameters": 2415600,
+  "gflops": 5.81,
+  "model_size_mb": 4.97,
+  "ultralytics_val_speed_ms": {
+    "preprocess": 0.69,
+    "inference": 3.992,
+    "loss": 0.001,
+    "postprocess": 0.96
+  },
+  "speed_benchmark": {
+    "images": 200,
+    "batch": 1,
+    "imgsz": 640,
+    "device": "0",
+    "end_to_end_ms_mean": 12.57,
+    "end_to_end_ms_median": 11.69,
+    "inference_ms_mean": 9.38,
+    "fps_end_to_end": 79.5,
+    "fps_inference_only": 106.7
+  }
+}

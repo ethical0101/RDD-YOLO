@@ -30,7 +30,7 @@ VID = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".m4v"}
 
 
 def default_weights() -> Path:
-    for n in ("rdd_yolo26n_ext_best.pt", "rdd_yolo26n_best.pt", "baseline_yolo26n_best.pt"):
+    for n in ("rdd_yolo26n_ext2_best.pt", "rdd_yolo26n_ext_best.pt", "rdd_yolo26n_best.pt", "baseline_yolo26n_best.pt"):
         if (WEIGHTS_DIR / n).exists():
             return WEIGHTS_DIR / n
     sys.exit("No trained checkpoint in models/weights. Train first (scripts/train.ps1) or pass --weights.")

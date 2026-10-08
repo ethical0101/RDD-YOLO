@@ -29,6 +29,16 @@ DATASETS = {
     "egypt_rdd": {"repo": "Hanno100/RoadDamageDetection-Egypt", "files": ["RDD.v8i.yolov8.zip"]},
     "potholes_rf": {"repo": "Ryukijano/Pothole-detection-Yolov8", "dirs": ["train", "valid", "test"],
                     "files": ["data.yaml", "README.roboflow.txt"]},
+    # --- close-up / ground-level pothole sets (round 2). License stated in each README.
+    "manot_road_damage": {"repo": "manot/pothole-segmentation",  # CC BY 4.0, roboflow road-damage-xvt2d
+                          "files": ["data/train.zip", "data/valid.zip", "data/test.zip", "README.dataset.txt"]},
+    "manot_pothole2": {"repo": "manot/pothole-segmentation2",  # CC BY 4.0, roboflow pothole-detection-gilij
+                       "files": ["data/train.zip", "data/valid.zip", "data/test.zip", "README.dataset.txt"]},
+    "keremberke_pothole": {"repo": "keremberke/pothole-segmentation",  # CC BY 4.0, roboflow pothole-detection-irkz9
+                           "files": ["data/train.zip", "data/valid.zip", "data/test.zip", "README.dataset.txt"]},
+    "rupesh_pothole2": {"repo": "rupesh002/pothole_dataset_2", "files": ["pothole_yolo_dataset.zip"]},  # MIT
+    "rupesh_pothole": {"repo": "rupesh002/pothole-detection-dataset", "files": ["pothole_dataset.zip"]},  # MIT
+    "mwpd": {"repo": "sumadixSk/pothole-dataset", "files": ["MWPD.zip"]},  # Apache-2.0
 }
 
 
@@ -67,11 +77,11 @@ def main() -> None:
             get(f"{HF}/datasets/{spec['repo']}/resolve/main/{urllib.parse.quote(f)}", dst / f)
             if i % 100 == 0:
                 print(f"  {i}/{len(files)}")
-        for z in dst.glob("*.zip"):
+        for z in [*dst.glob("*.zip"), *dst.glob("data/*.zip")]:
             marker = dst / f".{z.stem}.extracted"
             if not marker.exists():
                 with zipfile.ZipFile(z) as zf:
-                    zf.extractall(dst)
+                    zf.extractall(dst / z.stem if z.parent.name == "data" else dst)
                 marker.write_text("ok")
         print(f"[{name}] {len(files)} files -> {dst}")
 

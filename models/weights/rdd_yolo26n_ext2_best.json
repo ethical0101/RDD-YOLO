@@ -1,0 +1,32 @@
+{
+  "model_name": "Experiment B - RDD-YOLO (SimAM + GhostConv + Bilinear)",
+  "experiment": "rdd",
+  "run_name": "rdd_yolo26n_ext2",
+  "architecture": "models/architectures/yolo26-rdd.yaml",
+  "scale": "n",
+  "ultralytics_version": "8.4.174",
+  "dataset": "dataset\\processed\\rdd2022_extended_v2\\data.yaml",
+  "imgsz": 640,
+  "epochs_requested": 15,
+  "results": {
+    "epochs_completed": 15,
+    "best_epoch_val": {
+      "epoch": 15,
+      "precision": 0.66869,
+      "recall": 0.54745,
+      "f1": 0.6020266424918184,
+      "mAP50": 0.59773,
+      "mAP50_95": 0.30409
+    },
+    "last_epoch_val": {
+      "epoch": 15,
+      "precision": 0.66869,
+      "recall": 0.54745,
+      "f1": 0.6020266424918184,
+      "mAP50": 0.59773,
+      "mAP50_95": 0.30409
+    }
+  },
+  "trained_on": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "finished_utc": "2026-10-08T15:09:51.850119+00:00"
+}

@@ -82,7 +82,32 @@ External pothole sets (Roboflow exports, CC BY 4.0) contribute **only the pothol
 | Ground-level potholes (external) (221 imgs) | mAP@50 | 18.34 | 44.61 | +26.27 |
 | Ground-level potholes (external) (221 imgs) | mAP@50-95 | 7.19 | 18.51 | +11.33 |
 
-Experiment C is the model served by the application (`models/weights/rdd_yolo26n_ext_best.pt`). Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.
+Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.
+
+## Experiment D — + close-up pothole datasets (served model)
+
+Fine-tuned from Experiment C for 15 epochs (1.41 h, NVIDIA GeForce RTX 3050 Laptop GPU) on 24,566 training images. Added 3,096 close-up/ground-level pothole training images from six public datasets with stated licenses (CC BY 4.0: manot/pothole-segmentation, manot/pothole-segmentation2, keremberke/pothole-segmentation; MIT: rupesh002 ×2; Apache-2.0: sumadixSk MWPD). De-duplication by 64-bit dHash (incl. mirrored images, Hamming ≤ 6) removed 2,322 duplicate images, of which 448 matched a held-out test image (leakage prevented). Their own test splits form a new held-out **close-up pothole test set** (235 images).
+
+| Test set | Metric | B | C | D (served) |
+|---|---|---|---|---|
+| Original RDD2022 test (2023 imgs) | Precision | 63.08 | 62.65 | 64.74 |
+| Original RDD2022 test (2023 imgs) | Recall | 55.28 | 57.19 | 56.97 |
+| Original RDD2022 test (2023 imgs) | mAP@50 | 59.46 | 60.50 | 61.02 |
+| Original RDD2022 test (2023 imgs) | mAP@50-95 | 30.30 | 30.31 | 30.87 |
+| Norway + China_Drone (532 imgs) | Precision | 26.87 | 49.03 | 49.19 |
+| Norway + China_Drone (532 imgs) | Recall | 20.67 | 34.68 | 36.19 |
+| Norway + China_Drone (532 imgs) | mAP@50 | 12.92 | 33.37 | 33.71 |
+| Norway + China_Drone (532 imgs) | mAP@50-95 | 5.24 | 15.24 | 16.12 |
+| Ground-level potholes (221 imgs) | Precision | 36.39 | 55.98 | 63.34 |
+| Ground-level potholes (221 imgs) | Recall | 19.99 | 45.81 | 51.31 |
+| Ground-level potholes (221 imgs) | mAP@50 | 18.34 | 44.61 | 55.56 |
+| Ground-level potholes (221 imgs) | mAP@50-95 | 7.19 | 18.51 | 24.42 |
+| Close-up potholes (new) (235 imgs) | Precision | 36.19 | 49.66 | 70.52 |
+| Close-up potholes (new) (235 imgs) | Recall | 27.61 | 39.36 | 61.03 |
+| Close-up potholes (new) (235 imgs) | mAP@50 | 21.41 | 38.06 | 63.88 |
+| Close-up potholes (new) (235 imgs) | mAP@50-95 | 7.82 | 14.93 | 31.61 |
+
+Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). Each step adds data *and* epochs, so improvements are not attributable to data alone.
 
 ## Generated artefacts
 

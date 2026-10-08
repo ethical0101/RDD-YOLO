@@ -161,8 +161,35 @@ def main() -> None:
             for k, lbl in (("precision", "Precision"), ("recall", "Recall"), ("mAP50", "mAP@50"), ("mAP50_95", "mAP@50-95")):
                 L.append(f"| {label} ({c['images']} imgs) | {lbl} | {pct(b['overall'][k])} | {pct(c['overall'][k])} | "
                          f"{100 * (c['overall'][k] - b['overall'][k]):+.2f} |")
-        L += ["", "Experiment C is the model served by the application (`models/weights/rdd_yolo26n_ext_best.pt`). "
-              "Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.", ""]
+        L += ["", "Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.", ""]
+
+    # ---------------- Experiment D (extended v2: + close-up pothole datasets, de-duplicated)
+    d_info = load(EXPERIMENTS_DIR / "rdd_yolo26n_ext2" / "run_info.json")
+    if d_info:
+        st = load(ROOT / "dataset" / "processed" / "rdd2022_extended_v2" / "dataset_stats_v2.json") or {}
+        added, skipped = st.get("added", {}), st.get("skipped", {})
+        n_train = sum(v for k, v in added.items() if k.endswith("/train"))
+        n_dup = sum(v for k, v in skipped.items() if "duplicate" in k)
+        n_leak = sum(v for k, v in skipped.items() if "duplicates a test image" in k) + st.get("removed_round1_external_duplicates", 0)
+        L += ["## Experiment D — + close-up pothole datasets (served model)", "",
+              f"Fine-tuned from Experiment C for {d_info['results']['epochs_completed']} epochs "
+              f"({d_info['train_time_hours']:.2f} h, {d_info['hardware'].get('gpu_name')}) on "
+              f"{st.get('images', {}).get('train', 'n/a'):,} training images. Added {n_train:,} close-up/ground-level pothole "
+              "training images from six public datasets with stated licenses (CC BY 4.0: manot/pothole-segmentation, "
+              "manot/pothole-segmentation2, keremberke/pothole-segmentation; MIT: rupesh002 ×2; Apache-2.0: sumadixSk MWPD). "
+              f"De-duplication by 64-bit dHash (incl. mirrored images, Hamming ≤ {st.get('hamming_threshold')}) removed {n_dup:,} "
+              f"duplicate images, of which {n_leak:,} matched a held-out test image (leakage prevented). Their own test "
+              f"splits form a new held-out **close-up pothole test set** ({st.get('images', {}).get('test_closeup', 0)} images).", "",
+              "| Test set | Metric | B | C | D (served) |", "|---|---|---|---|---|"]
+        for tag, label in (("test", "Original RDD2022 test"), ("test_rdd_new", "Norway + China_Drone"),
+                           ("test_external", "Ground-level potholes"), ("test_closeup", "Close-up potholes (new)")):
+            ms = [load(EXPERIMENTS_DIR / r / f"eval_{tag}" / "metrics.json") for r in ("rdd_yolo26n", "rdd_yolo26n_ext", "rdd_yolo26n_ext2")]
+            if not all(ms):
+                continue
+            for k, lbl in (("precision", "Precision"), ("recall", "Recall"), ("mAP50", "mAP@50"), ("mAP50_95", "mAP@50-95")):
+                L.append(f"| {label} ({ms[2]['images']} imgs) | {lbl} | " + " | ".join(pct(m['overall'][k]) for m in ms) + " |")
+        L += ["", "Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). "
+              "Each step adds data *and* epochs, so improvements are not attributable to data alone.", ""]
 
     L += ["## Generated artefacts", "",
           "* `experiments/<run>/results.csv` / `results.png` — per-epoch losses (box, cls, L1) and val P/R/mAP",

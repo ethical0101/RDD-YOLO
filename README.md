@@ -131,17 +131,18 @@ Measured on the held-out test split (2,023 images), 40 epochs each, RTX 3050 Lap
 RDD-YOLO is 3.6 % smaller but 8 % slower. The paper's gains (YOLOv8x, 180 epochs) were not reproduced at
 nano scale / 40 epochs — reported as measured.
 
-**Experiment C — extended data (the model served by the app).** RDD-YOLO26n fine-tuned for 25 more epochs
-(1.9 h on the RTX 3050) on 21,477 images: the original set + RDD2022 Norway & China_Drone + two public
-ground-level pothole datasets (pothole class only). Measured before → after:
+**Experiments C and D — extended data.** C: RDD-YOLO26n fine-tuned on all 7 RDD2022 regions + two public
+pothole sets (21,477 images, 25 epochs, 1.9 h). D (**served by the app**): C fine-tuned on +3,096 de-duplicated
+close-up pothole images from six licensed public datasets (15 epochs, 1.4 h). Measured mAP@50, B → C → D:
 
-| Test set | mAP@50 | Recall |
-|---|---|---|
-| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % → **60.50 %** | 55.28 % → **57.19 %** |
-| Norway + China_Drone held-out (532 imgs) | 12.92 % → **33.37 %** | 20.67 % → **34.68 %** |
-| Ground-level potholes, external (221 imgs) | 18.34 % → **44.61 %** | 19.99 % → **45.81 %** |
+| Test set | B | C | **D** |
+|---|---|---|---|
+| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % | 60.50 % | **61.02 %** |
+| Norway + China_Drone held-out (532 imgs) | 12.92 % | 33.37 % | **33.71 %** |
+| Ground-level potholes, external (221 imgs) | 18.34 % | 44.61 % | **55.56 %** |
+| Close-up potholes, new held-out (235 imgs) | 21.41 % | 38.06 % | **63.88 %** |
 
-Reproduce with `scripts	rain_extended.ps1`.
+Reproduce C with `scripts	rain_extended.ps1`; D additionally runs `datasetuild_extended_v2.py` (see docs/experiments.md).
 
 See **[docs/experiments.md](docs/experiments.md)** for per-class results and details — it contains the measured numbers of both experiments
 (written from `experiments/comparison.json` after the runs finished) and how to interpret them. The same
