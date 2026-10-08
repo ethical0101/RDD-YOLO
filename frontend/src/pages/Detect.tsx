@@ -8,6 +8,8 @@ import DetectionViewer from '../components/DetectionViewer'
 import LocationPicker, { NO_LOCATION, type PickedLocation } from '../components/LocationPicker'
 import { Button, Card, ClassBadge, EmptyState, ErrorState, Field, Notice, PageHeader, SeverityBadge, SourceBadge } from '../components/ui'
 
+const SUPPORTED = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/bmp']
+
 export default function Detect() {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -25,6 +27,13 @@ export default function Detect() {
 
   const pick = (f: File | undefined) => {
     if (!f) return
+    if (!SUPPORTED.includes(f.type)) {
+      setFile(null)
+      setPreview(null)
+      setRes(null)
+      setError(`"${f.name}" is ${f.type || 'an unknown type'}, which the model can't read. Use a JPEG, PNG, WebP or BMP image (iPhone HEIC photos: export/share as JPEG first).`)
+      return
+    }
     setFile(f)
     setPreview(URL.createObjectURL(f))
     setRes(null)
@@ -79,7 +88,7 @@ export default function Detect() {
               <div className="mt-2 break-all text-sm font-medium text-slate-700">{file ? file.name : 'Drop an image or click to browse'}</div>
               <div className="text-xs text-slate-500">JPEG / PNG / WebP</div>
             </div>
-            <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/bmp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             <div className="mt-4 space-y-3">
               <Field label={`Confidence threshold: ${conf.toFixed(2)}`}>
                 <input type="range" min={0.05} max={0.9} step={0.05} value={conf} onChange={(e) => setConf(Number(e.target.value))} className="w-full accent-slate-900" />
@@ -94,8 +103,9 @@ export default function Detect() {
             <LocationPicker value={loc} onChange={setLoc} compact />
           </Card>
           <Button onClick={run} disabled={!file || busy} className="w-full py-2.5">
-            <ScanSearch className="h-4 w-4" /> {busy ? 'Running inference…' : 'Detect road damage'}
+            <ScanSearch className="h-4 w-4" /> {busy ? 'Running inference…' : file ? 'Detect road damage' : 'Select an image first (step 1)'}
           </Button>
+          {!file && <p className="-mt-3 text-center text-xs text-slate-500">Choose a road photo in <b>1 · Image</b> above — the location alone is not enough.</p>}
           {error && <ErrorState message={error} />}
         </div>
 

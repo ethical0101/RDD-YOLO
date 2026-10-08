@@ -28,7 +28,7 @@ log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 DB = Annotated[Session, Depends(get_db)]
 
-IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp"}
+IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/pjpeg", "image/png", "image/webp", "image/bmp"}
 VIDEO_EXTS = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".m4v"}
 
 
