@@ -8,7 +8,9 @@ import DetectionViewer from '../components/DetectionViewer'
 import LocationPicker, { NO_LOCATION, type PickedLocation } from '../components/LocationPicker'
 import { Button, Card, ClassBadge, EmptyState, ErrorState, Field, Notice, PageHeader, SeverityBadge, SourceBadge } from '../components/ui'
 
-const SUPPORTED = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/bmp']
+const SUPPORTED = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/bmp', 'image/avif', 'image/heic', 'image/heif']
+// Browsers can't preview HEIC; the server still decodes it, so the result view uses the server's annotated image.
+const BROWSER_PREVIEWABLE = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/png', 'image/webp', 'image/bmp', 'image/avif']
 
 export default function Detect() {
   const [file, setFile] = useState<File | null>(null)
@@ -31,7 +33,7 @@ export default function Detect() {
       setFile(null)
       setPreview(null)
       setRes(null)
-      setError(`"${f.name}" is ${f.type || 'an unknown type'}, which the model can't read. Use a JPEG, PNG, WebP or BMP image (iPhone HEIC photos: export/share as JPEG first).`)
+      setError(`"${f.name}" is ${f.type || 'an unknown type'}, which can't be read. Use a JPEG, PNG, WebP, BMP, AVIF or HEIC image.`)
       return
     }
     setFile(f)
@@ -74,7 +76,6 @@ export default function Detect() {
     } catch (e: any) { setError(e.message) }
   }
 
-  const imgSrc = res?.annotated_base64 ? null : preview
   return (
     <>
       <PageHeader title="Image Detection" subtitle="Upload a road photo. The trained model localises damage, classifies it (D00/D10/D20/D40) and estimates a heuristic severity." />
@@ -86,7 +87,7 @@ export default function Detect() {
               className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-4 py-8 text-center hover:border-slate-400 hover:bg-slate-50">
               <ImageUp className="h-8 w-8 text-slate-400" />
               <div className="mt-2 break-all text-sm font-medium text-slate-700">{file ? file.name : 'Drop an image or click to browse'}</div>
-              <div className="text-xs text-slate-500">JPEG / PNG / WebP</div>
+              <div className="text-xs text-slate-500">JPEG / PNG / WebP / AVIF / HEIC</div>
             </div>
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             <div className="mt-4 space-y-3">
@@ -115,9 +116,12 @@ export default function Detect() {
             {!preview ? (
               <EmptyState title="No image selected" icon={<ImageUp className="h-8 w-8" />}>Choose a road image to start.</EmptyState>
             ) : res ? (
-              res.annotated_base64 && !imgSrc
+              res.annotated_base64
                 ? <img src={`data:image/jpeg;base64,${res.annotated_base64}`} className="w-full rounded-lg" alt="Annotated" />
-                : <DetectionViewer src={preview} width={res.width} height={res.height} detections={res.detections} highlight={hover} onHover={setHover} />
+                // boxes are drawn over the server's decoded copy, so orientation and size always match
+                : <DetectionViewer src={res.image_url ?? preview} width={res.width} height={res.height} detections={res.detections} highlight={hover} onHover={setHover} />
+            ) : file && !BROWSER_PREVIEWABLE.includes(file.type) ? (
+              <EmptyState title={file.name} icon={<ImageUp className="h-8 w-8" />}>This browser can't preview {file.type.replace('image/', '').toUpperCase()} files, but the server can analyse them — click Detect.</EmptyState>
             ) : (
               <img src={preview} className="w-full rounded-lg" alt="Preview" />
             )}

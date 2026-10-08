@@ -39,6 +39,8 @@ def extract_exif_gps(image_bytes: bytes) -> tuple[float, float] | None:
     try:
         from PIL import Image
 
+        from . import imageio  # noqa: F401  (registers the HEIC opener so EXIF is readable)
+
         with Image.open(io.BytesIO(image_bytes)) as im:
             gps = im.getexif().get_ifd(0x8825)  # GPSInfo IFD
         if not gps or 2 not in gps or 4 not in gps:

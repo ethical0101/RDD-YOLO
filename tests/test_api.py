@@ -180,3 +180,25 @@ def test_delete_detection_and_inference(client, sample_image):
         assert client.get(f"/api/detections/{did}").status_code == 404
     assert client.delete(f"/api/inferences/{iid}").status_code == 204
     assert client.get(f"/api/inferences/{iid}").status_code == 404
+
+
+@pytest.mark.parametrize("fmt,mime", [("AVIF", "image/avif"), ("HEIF", "image/heic")])
+def test_modern_formats_avif_heic(client, sample_image, fmt, mime):
+    import rdd_yolo.imageio  # noqa: F401  (registers HEIF encoder/decoder)
+
+    img = Image.open(sample_image).convert("RGB")
+    buf = io.BytesIO()
+    kwargs = {}
+    if fmt == "HEIF":  # also carry EXIF GPS through a HEIC file
+        from tests.test_core import _jpeg_with_gps
+
+        kwargs["exif"] = Image.open(io.BytesIO(_jpeg_with_gps(12.95, 79.13))).getexif()
+    img.save(buf, fmt, **kwargs)
+    r = client.post("/api/inference/image", files=[("file", (f"photo.{fmt.lower()}", buf.getvalue(), mime))],
+                    data={"conf": "0.25"})
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert (body["width"], body["height"]) == img.size
+    assert client.get(body["image_url"]).status_code == 200  # stored as JPEG, viewable in any browser
+    if fmt == "HEIF":
+        assert body["location"]["source"] == "exif" and body["location"]["lat"] == pytest.approx(12.95, abs=1e-4)

@@ -50,9 +50,9 @@ def save_crop(img: np.ndarray, bbox: list[float], stem: str, pad: float = 0.15) 
 
 
 def decode_image(data: bytes) -> np.ndarray | None:
-    arr = np.frombuffer(data, dtype=np.uint8)
-    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    return img
+    from rdd_yolo.imageio import decode_image as _decode
+
+    return _decode(data)
 
 
 def experiments_url(path: Path) -> str:

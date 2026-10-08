@@ -17,6 +17,7 @@ python-dotenv==1.2.4
 
 # Media / utilities
 imageio-ffmpeg==0.6.0
+pillow-heif==1.8.0   # HEIC/HEIF (iPhone) photos; AVIF is native in Pillow
 psutil==7.2.2
 
 # Testing

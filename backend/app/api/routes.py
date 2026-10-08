@@ -28,7 +28,8 @@ log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 DB = Annotated[Session, Depends(get_db)]
 
-IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/pjpeg", "image/png", "image/webp", "image/bmp"}
+IMAGE_TYPES = {"image/jpeg", "image/jpg", "image/pjpeg", "image/png", "image/webp", "image/bmp", "image/avif",
+               "image/heic", "image/heif", "application/octet-stream"}  # octet-stream: decoded and validated below
 VIDEO_EXTS = {".mp4", ".avi", ".mov", ".mkv", ".webm", ".m4v"}
 
 
