@@ -1,0 +1,74 @@
+[
+  {
+    "file": "D00_longitudinal_1_China_MotorBike_China_MotorBike_000941.jpg",
+    "source": "China_MotorBike_China_MotorBike_000941.jpg",
+    "class_shown": "D00_longitudinal",
+    "model_conf_at_selection": 0.877
+  },
+  {
+    "file": "D00_longitudinal_2_United_States_United_States_001639.jpg",
+    "source": "United_States_United_States_001639.jpg",
+    "class_shown": "D00_longitudinal",
+    "model_conf_at_selection": 0.87
+  },
+  {
+    "file": "D00_longitudinal_3_Japan_Japan_009955.jpg",
+    "source": "Japan_Japan_009955.jpg",
+    "class_shown": "D00_longitudinal",
+    "model_conf_at_selection": 0.842
+  },
+  {
+    "file": "D10_transverse_1_China_MotorBike_China_MotorBike_001324.jpg",
+    "source": "China_MotorBike_China_MotorBike_001324.jpg",
+    "class_shown": "D10_transverse",
+    "model_conf_at_selection": 0.808
+  },
+  {
+    "file": "D10_transverse_2_United_States_United_States_003560.jpg",
+    "source": "United_States_United_States_003560.jpg",
+    "class_shown": "D10_transverse",
+    "model_conf_at_selection": 0.773
+  },
+  {
+    "file": "D10_transverse_3_Japan_Japan_011489.jpg",
+    "source": "Japan_Japan_011489.jpg",
+    "class_shown": "D10_transverse",
+    "model_conf_at_selection": 0.761
+  },
+  {
+    "file": "D20_alligator_1_India_India_006820.jpg",
+    "source": "India_India_006820.jpg",
+    "class_shown": "D20_alligator",
+    "model_conf_at_selection": 0.873
+  },
+  {
+    "file": "D20_alligator_2_Japan_Japan_004882.jpg",
+    "source": "Japan_Japan_004882.jpg",
+    "class_shown": "D20_alligator",
+    "model_conf_at_selection": 0.868
+  },
+  {
+    "file": "D20_alligator_3_China_MotorBike_China_MotorBike_000219.jpg",
+    "source": "China_MotorBike_China_MotorBike_000219.jpg",
+    "class_shown": "D20_alligator",
+    "model_conf_at_selection": 0.864
+  },
+  {
+    "file": "D40_pothole_1_Japan_Japan_001247.jpg",
+    "source": "Japan_Japan_001247.jpg",
+    "class_shown": "D40_pothole",
+    "model_conf_at_selection": 0.899
+  },
+  {
+    "file": "D40_pothole_2_China_MotorBike_China_MotorBike_000407.jpg",
+    "source": "China_MotorBike_China_MotorBike_000407.jpg",
+    "class_shown": "D40_pothole",
+    "model_conf_at_selection": 0.794
+  },
+  {
+    "file": "D40_pothole_3_India_India_006555.jpg",
+    "source": "India_India_006555.jpg",
+    "class_shown": "D40_pothole",
+    "model_conf_at_selection": 0.739
+  }
+]

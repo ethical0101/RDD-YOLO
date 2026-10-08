@@ -206,7 +206,7 @@ Tests use an isolated temporary database and CPU inference, so they can run whil
 
 1. `scripts\start_all.ps1` → browser opens the **Dashboard** (status pill shows the loaded checkpoint).
 2. **Model** page: trained RDD-YOLO checkpoint, dataset, classes, image size, epochs, test metrics.
-3. **Image Detection**: drop a road image → *Detect road damage*.
+3. **Image Detection**: drop a road image (e.g. from `demo_images/`, held-out test photos) → *Detect road damage*.
 4. Bounding boxes, class, confidence and severity appear (hover a row to highlight its box).
 5. Location: *Use my location* (browser GPS) or click the map (manual); an EXIF-tagged photo is located automatically.
 6. Detections are saved (checkbox on) → *View on map*.
@@ -234,6 +234,10 @@ Tests use an isolated temporary database and CPU inference, so they can run whil
 * Model, data and hardware differ from the RDD-YOLO paper (YOLOv8x, all RDD2022 countries, 180 epochs, RTX 4090).
   Our numbers are **not** comparable to the paper's and are reported only for our own setup.
 * The official RDD2022 test set has no public labels; our "test" split is a held-out 10 % of the labelled data.
+* **Domain gap.** RDD2022 images come from vehicle-mounted cameras looking down the road; the median pothole
+  covers only 0.6 % of the image (only 1.6 % of training potholes cover ≥ 15 %). Ground-level, wide-angle or
+  stock photos where one pothole fills the frame are largely outside the training distribution and are often
+  missed. Use road photos taken from a vehicle (or the held-out samples in `demo_images/`) for demonstrations.
 * Severity is a heuristic, not a certified assessment.
 * Docker files are provided but were not exercised in the development environment (Docker daemon not running);
   the native PowerShell workflow is the tested path.
