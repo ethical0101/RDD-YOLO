@@ -42,8 +42,9 @@ EXPERIMENTS = {
 BACKBONE_LAST_LAYER = 10  # index of C2PSA, the last backbone layer in both YAMLs
 
 
-def build_initial_checkpoint(yaml_path: Path, scale: str, out_path: Path, pretrained: bool, seed: int) -> dict:
-    """Build the model from YAML, transfer COCO backbone weights, save as an init checkpoint."""
+def build_initial_checkpoint(yaml_path: Path, scale: str, out_path: Path, pretrained: bool, seed: int,
+                             all_layers: bool = False) -> dict:
+    """Build the model from YAML, transfer COCO weights (backbone only, or every shape-compatible layer)."""
     import torch
     from ultralytics.nn.tasks import DetectionModel
     from ultralytics.utils.torch_utils import init_seeds
@@ -66,13 +67,13 @@ def build_initial_checkpoint(yaml_path: Path, scale: str, out_path: Path, pretra
         transfer = {}
         for k, v in src_sd.items():
             parts = k.split(".")
-            if parts[0] != "model" or not parts[1].isdigit() or int(parts[1]) > BACKBONE_LAST_LAYER:
+            if parts[0] != "model" or not parts[1].isdigit() or (not all_layers and int(parts[1]) > BACKBONE_LAST_LAYER):
                 continue
             report["backbone_tensors"] += 1
             if k in dst_sd and dst_sd[k].shape == v.shape:
                 transfer[k] = v
         missing = model.load_state_dict(transfer, strict=False)
-        report.update(pretrained_source=src_name, transferred_tensors=len(transfer),
+        report.update(pretrained_source=src_name, transferred_tensors=len(transfer), scope="all layers" if all_layers else "backbone",
                       model_tensors=len(dst_sd), not_initialised_from_pretrained=len(missing.missing_keys))
         # keep a local copy of the COCO weights for reproducibility/offline use
         src_path = Path(src.ckpt_path) if getattr(src, "ckpt_path", None) else None
@@ -131,6 +132,9 @@ def main() -> None:
     ap.add_argument("--init-weights", type=Path, default=None,
                     help="Fine-tune: start from this trained checkpoint instead of the COCO-backbone init")
     ap.add_argument("--close-mosaic", type=int, default=10)
+    ap.add_argument("--title", default=None, help="Human-readable experiment title stored in run_info.json")
+    ap.add_argument("--init-all-layers", action="store_true",
+                    help="Transfer every shape-compatible COCO layer (backbone+neck+head), not only the backbone")
     args = ap.parse_args()
 
     register_custom_modules()
@@ -153,7 +157,9 @@ def main() -> None:
     batch = args.batch or rec.batch
     workers = rec.workers if args.workers is None else args.workers
     device = args.device or rec.device
-    exp = EXPERIMENTS[args.experiment]
+    exp = dict(EXPERIMENTS[args.experiment])
+    if args.title:
+        exp["title"] = args.title
     name = args.name or f"{args.experiment}_yolo26{scale}"
     run_dir = EXPERIMENTS_DIR / name
     print(f"== {exp['title']} ==")
@@ -169,7 +175,8 @@ def main() -> None:
         init_report = {"fine_tuned_from": str(args.init_weights)}
     else:
         init_ckpt = EXPERIMENTS_DIR / "_init" / f"{name}_init.pt"
-        init_report = build_initial_checkpoint(yaml_path, scale, init_ckpt, not args.no_pretrained, args.seed)
+        init_report = build_initial_checkpoint(yaml_path, scale, init_ckpt, not args.no_pretrained, args.seed,
+                                               all_layers=args.init_all_layers)
     print(f"Initialisation: {init_report}")
 
     model = YOLO(str(init_ckpt), task="detect")

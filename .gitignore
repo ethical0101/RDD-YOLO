@@ -45,3 +45,6 @@ Thumbs.db
 
 # Private course report (kept locally, not published)
 *.docx
+
+# Local safety copies of checkpoints
+models/backup_*/
