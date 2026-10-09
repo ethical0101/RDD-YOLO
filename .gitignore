@@ -50,3 +50,6 @@ Thumbs.db
 # Local safety copies of checkpoints
 models/backup_*/
 experiments/disk_monitor.log
+
+# Generated deployment bundle
+deploy/

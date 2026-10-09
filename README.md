@@ -233,6 +233,23 @@ Tests use an isolated temporary database and CPU inference, so they can run whil
 9. **Training & Experiments**: loss/mAP curves, confusion matrix, PR curves, and the **baseline vs RDD-YOLO** table with the architectural explanation.
 10. Optional: **Video Detection** with a dash-cam clip (+ GPS route CSV), **Live Camera**.
 
+## Deployment (free, Hugging Face Spaces)
+
+The whole app (API + dashboard + model + map) runs as one Docker container on a free Hugging Face Space
+(2 vCPU, 16 GB RAM, HTTPS - so browser GPS and the webcam work). No credit card or paid API is needed.
+
+```powershell
+cd frontend; npm run build; cd ..
+.venv\Scripts\python scriptsuild_hf_space.py          # -> deploy\hf_space (code, dashboard, models, results)
+.venv\Scripts\hf auth login                              # once; paste YOUR token from huggingface.co/settings/tokens (write access)
+.venv\Scripts\python scripts\deploy_hf_space.py --space <your-hf-username>/rdd-yolo
+```
+
+The Space builds automatically (~10 min) and is served at `https://<your-hf-username>-rdd-yolo.hf.space`.
+Limitations of the free tier: CPU inference (~0.1-1 s per image, videos are slow - use a high frame stride)
+and ephemeral storage (saved detections reset when the Space restarts). For a live demo with GPU speed,
+run the app locally (`scripts\start_all.ps1`).
+
 ## Troubleshooting
 
 | Problem | Fix |
