@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Film, Route as RouteIcon, Upload } from 'lucide-react'
-import { apiSend, useApi } from '../lib/api'
+import { apiGet, apiSend, useApi } from '../lib/api'
+import { STATIC } from '../lib/staticMode'
 import { CLASS_CODES, CLASS_COLORS, dateTime, pct } from '../lib/format'
 import type { Inference } from '../lib/types'
 import LocationPicker, { NO_LOCATION, type PickedLocation } from '../components/LocationPicker'
@@ -18,6 +19,7 @@ export default function VideoPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const overlayRef = useRef<HTMLCanvasElement>(null)
   const history = useApi<Inference[]>('/videos', { limit: 10 }, [job?.status])
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export default function VideoPage() {
     let stop = false
     const tick = async () => {
       try {
-        const j = await (await fetch(`/api/inference/video/${jobId}`)).json()
+        const j = await apiGet<Inference>(`/inference/video/${jobId}`)
         if (stop) return
         setJob(j)
         if (j.status === 'queued' || j.status === 'processing') setTimeout(tick, 1000)
@@ -73,7 +75,7 @@ export default function VideoPage() {
               <Field label={`Confidence threshold: ${conf.toFixed(2)}`}>
                 <input type="range" min={0.05} max={0.9} step={0.05} value={conf} onChange={(e) => setConf(Number(e.target.value))} className="w-full accent-slate-900" />
               </Field>
-              <Field label={`Frame stride: every ${stride} frame(s)`} hint="Higher = faster processing; boxes are carried between analysed frames.">
+              <Field label={STATIC ? `Sampling: every ${(stride / 30).toFixed(2)} s` : `Frame stride: every ${stride} frame(s)`} hint={STATIC ? 'The browser demo analyses one frame per interval; boxes are overlaid during playback.' : 'Higher = faster processing; boxes are carried between analysed frames.'}>
                 <input type="range" min={1} max={15} value={stride} onChange={(e) => setStride(Number(e.target.value))} className="w-full accent-slate-900" />
               </Field>
             </div>
@@ -111,9 +113,15 @@ export default function VideoPage() {
               </div>
             ) : job.status === 'failed' ? <ErrorState message={job.error ?? 'Processing failed'} /> : (
               <div className="space-y-4">
-                <video ref={videoRef} src={job.output_video_url ?? undefined} controls className="w-full rounded-lg bg-black" />
+                {job.output_video_url ? (
+                  <div className="relative">
+                    <video ref={videoRef} src={job.output_video_url} controls className="w-full rounded-lg bg-black"
+                      onTimeUpdate={() => drawOverlay(job, videoRef.current, overlayRef.current)} onSeeked={() => drawOverlay(job, videoRef.current, overlayRef.current)} />
+                    {job.extra?.overlay_frames && <canvas ref={overlayRef} className="pointer-events-none absolute inset-0 h-full w-full" />}
+                  </div>
+                ) : <EmptyState title="Video no longer available">Browser-processed videos are kept only until the page is reloaded; the detections below are saved.</EmptyState>}
                 <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                  <Mini k="Analysed frames" v={`${job.extra?.processed_frames} / ${job.extra?.frames}`} />
+                  <Mini k="Analysed frames" v={job.extra?.frames ? `${job.extra?.processed_frames} / ${job.extra?.frames}` : `${job.extra?.processed_frames} (every ${job.extra?.sample_interval_s} s)`} />
                   <Mini k="Unique detections" v={job.num_detections} />
                   <Mini k="Mean inference" v={`${job.extra?.mean_inference_ms ?? '—'} ms`} />
                   <Mini k="Inference FPS" v={job.extra?.inference_fps ?? '—'} />
@@ -181,4 +189,28 @@ export default function VideoPage() {
 
 function Mini({ k, v }: { k: string; v: React.ReactNode }) {
   return <div className="rounded-lg bg-slate-50 px-3 py-2"><div className="text-xs text-slate-500">{k}</div><div className="font-semibold tabular-nums">{v}</div></div>
+}
+
+/** Browser demo: the video is not re-encoded, so boxes are drawn live from the nearest analysed frame. */
+function drawOverlay(job: Inference, v: HTMLVideoElement | null, c: HTMLCanvasElement | null) {
+  const frames = job.extra?.overlay_frames as { t: number; dets: { class_code: keyof typeof CLASS_COLORS; confidence: number; bbox: number[] }[] }[] | undefined
+  if (!frames || !v || !c || !job.width || !job.height) return
+  c.width = job.width
+  c.height = job.height
+  const ctx = c.getContext('2d')!
+  ctx.clearRect(0, 0, c.width, c.height)
+  let best = frames[0]
+  for (const f of frames) if (f.t <= v.currentTime + 1e-3) best = f
+  const lw = Math.max(2, c.width / 300)
+  ctx.lineWidth = lw
+  ctx.font = `600 ${Math.max(14, c.width / 45)}px Inter, sans-serif`
+  for (const d of best?.dets ?? []) {
+    const [x1, y1, x2, y2] = d.bbox
+    ctx.strokeStyle = ctx.fillStyle = CLASS_COLORS[d.class_code]
+    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1)
+    const label = `${d.class_code} ${(d.confidence * 100).toFixed(0)}%`
+    ctx.fillRect(x1, Math.max(0, y1 - 24), ctx.measureText(label).width + 8, 24)
+    ctx.fillStyle = '#fff'
+    ctx.fillText(label, x1 + 4, Math.max(18, y1 - 6))
+  }
 }

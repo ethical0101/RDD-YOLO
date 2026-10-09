@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, ImageUp, Info, MapPinned, ScanSearch } from 'lucide-react'
 import { apiSend } from '../lib/api'
 import { pct } from '../lib/format'
+import { STATIC, asset } from '../lib/staticMode'
 import type { ImageInferenceResponse } from '../lib/types'
 import DetectionViewer from '../components/DetectionViewer'
 import LocationPicker, { NO_LOCATION, type PickedLocation } from '../components/LocationPicker'
@@ -26,6 +27,14 @@ export default function Detect() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
+  const [samples, setSamples] = useState<{ file: string; label: string }[]>([])
+  useEffect(() => {
+    if (STATIC) fetch(asset('/data/demo/index.json')!).then((r) => r.json()).then(setSamples).catch(() => setSamples([]))
+  }, [])
+  const pickSample = async (f: string) => {
+    const b = await (await fetch(asset(`/data/demo/${f}`)!)).blob()
+    pick(new File([b], f, { type: 'image/jpeg' }))
+  }
 
   const pick = (f: File | undefined) => {
     if (!f) return
@@ -89,6 +98,19 @@ export default function Detect() {
               <div className="mt-2 break-all text-sm font-medium text-slate-700">{file ? file.name : 'Drop an image or click to browse'}</div>
               <div className="text-xs text-slate-500">JPEG / PNG / WebP / AVIF / HEIC</div>
             </div>
+            {samples.length > 0 && (
+              <div className="mt-3">
+                <div className="mb-1.5 text-xs font-medium text-slate-500">Or try a held-out test photo (RDD2022, CC BY 4.0):</div>
+                <div className="grid grid-cols-6 gap-1.5">
+                  {samples.map((x) => (
+                    <button key={x.file} type="button" title={x.label} onClick={() => pickSample(x.file)}
+                      className="overflow-hidden rounded-md ring-1 ring-slate-200 hover:ring-2 hover:ring-slate-500">
+                      <img src={asset(`/data/demo/${x.file}`)} alt={x.label} className="aspect-square w-full object-cover" loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
             <div className="mt-4 space-y-3">
               <Field label={`Confidence threshold: ${conf.toFixed(2)}`}>

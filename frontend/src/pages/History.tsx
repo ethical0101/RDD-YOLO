@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Download, MapPinned, Trash2 } from 'lucide-react'
-import { apiSend, useApi } from '../lib/api'
+import { apiGet, apiSend, useApi } from '../lib/api'
 import { CLASS_CODES, CLASS_NAMES, SEVERITIES, coord, dateTime, pct } from '../lib/format'
 import type { StoredDetection } from '../lib/types'
 import { Button, Card, ClassBadge, EmptyState, ErrorState, PageHeader, SeverityBadge, SourceBadge, Spinner, inputCls } from '../components/ui'
@@ -25,8 +25,7 @@ export default function History() {
   }
 
   const exportCsv = async () => {
-    const res = await fetch(`/api/detections?${new URLSearchParams({ ...Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '').map(([k, v]) => [k, String(v)])), limit: '1000', offset: '0' })}`)
-    const rows: StoredDetection[] = (await res.json()).items
+    const rows: StoredDetection[] = (await apiGet<{ items: StoredDetection[] }>('/detections', { ...params, limit: 1000, offset: 0 })).items
     const head = ['id', 'created_at', 'class_code', 'class_name', 'confidence', 'severity', 'severity_score', 'latitude', 'longitude', 'location_source', 'kind', 'video_time_s', 'model_version']
     const csv = [head.join(','), ...rows.map((r) => head.map((h) => JSON.stringify((r as any)[h] ?? '')).join(','))].join('\n')
     const a = document.createElement('a')

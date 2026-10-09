@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { AlertOctagon, Gauge, MapPinned, ScanSearch } from 'lucide-react'
 import { useApi } from '../lib/api'
 import { CLASS_CODES, CLASS_COLORS, CLASS_NAMES, dateTime, intFmt, pct } from '../lib/format'
+import { deviceLabel } from '../lib/format'
 import type { ExperimentSummary, Stats, StoredDetection } from '../lib/types'
 import { Button, Card, ClassBadge, EmptyState, ErrorState, PageHeader, SeverityBadge, SourceBadge, Spinner, StatCard } from '../components/ui'
 
@@ -62,7 +63,7 @@ export default function Dashboard() {
                   <Row k="Checkpoint" v={model.data.info.weights} />
                   <Row k="Architecture" v={model.data.info.architecture ?? '—'} />
                   <Row k="Parameters" v={intFmt(model.data.info.parameters)} />
-                  <Row k="Device" v={model.data.info.device === 'cpu' ? 'CPU' : `CUDA:${model.data.info.device}`} />
+                  <Row k="Device" v={deviceLabel(model.data.info.device)} />
                   {best?.test_metrics && <>
                     <Row k="Test mAP@50" v={pct(best.test_metrics.mAP50)} />
                     <Row k="Test mAP@50-95" v={pct(best.test_metrics.mAP50_95)} />

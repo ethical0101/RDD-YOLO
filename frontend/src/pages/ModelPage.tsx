@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CheckCircle2, Cpu } from 'lucide-react'
 import { apiSend, useApi } from '../lib/api'
 import { CLASS_CODES, CLASS_COLORS, CLASS_NAMES, intFmt, pct } from '../lib/format'
+import { deviceLabel } from '../lib/format'
 import type { EvalMetrics, ExperimentDetail } from '../lib/types'
 import { Button, Card, EmptyState, ErrorState, Notice, PageHeader, Spinner } from '../components/ui'
 
@@ -47,7 +48,7 @@ export default function ModelPage() {
               <KV k="Training time" v={ri?.train_time_hours ? `${ri.train_time_hours.toFixed(2)} h on ${ri.hardware?.gpu_name ?? 'CPU'}` : '—'} />
               <KV k="Image size" v={`${info.imgsz} × ${info.imgsz}`} />
               <KV k="Parameters" v={intFmt(info.parameters)} />
-              <KV k="Inference device" v={info.device === 'cpu' ? 'CPU' : `CUDA:${info.device}`} />
+              <KV k="Inference device" v={deviceLabel(info.device)} />
               <KV k="Initialisation" v={ri?.initialisation?.pretrained_source ? `Backbone from COCO ${ri.initialisation.pretrained_source}; neck/head trained from scratch` : '—'} />
             </dl>
           </Card>

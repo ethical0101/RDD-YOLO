@@ -1,287 +1,275 @@
-# RDD-YOLO: AI-Based Road Damage Detection, Geolocation and Mapping System
+<div align="center">
 
-A complete, working deep-learning system that **trains** road-damage detectors on the public RDD2022 dataset,
-**evaluates** them on a held-out test split, and serves them through a **FastAPI** backend and a **React**
-dashboard with image, video and live-camera detection, **GPS/EXIF/route geolocation**, an
-**OpenStreetMap** damage map, analytics and a detection database. Zero paid APIs, zero API keys.
+# 🛣️ RDD-YOLO
 
-Detected classes (RDD2022 codes): **D00** longitudinal crack · **D10** transverse crack · **D20** alligator crack · **D40** pothole.
+### AI-Based Road Damage Detection, Geolocation and Mapping System
 
-> **What model is this?** The academic report describes RDD-YOLO on **YOLOv8**. This implementation uses
-> **Ultralytics 8.4.174 with YOLO26** (the current Ultralytics detector at development time, Oct 2026), nano
-> scale for a 4 GB GPU. The three RDD-YOLO modifications — **SimAM attention, GhostConv neck, bilinear
-> upsampling** — are implemented on YOLO26 and compared against an unmodified YOLO26 baseline trained identically.
-> It is therefore *not* called "YOLOv8" anywhere in the code.
+Detects **longitudinal cracks, transverse cracks, alligator cracks and potholes** in road images and videos,
+attaches real GPS locations, and maps every detection on OpenStreetMap — trained end-to-end on RDD2022 and
+9 more public datasets with a fully reproducible pipeline.
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-ethical0101.github.io%2FRDD--YOLO-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://ethical0101.github.io/RDD-YOLO/)
+
+[![mAP@50](https://img.shields.io/badge/RDD2022_test_mAP@50-62.45%25-blue)](docs/experiments.md)
+[![Model](https://img.shields.io/badge/model-YOLO26s-orange)](https://docs.ultralytics.com/)
+[![Ultralytics](https://img.shields.io/badge/Ultralytics-8.4.174-111F68)](https://github.com/ultralytics/ultralytics)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.14_CUDA_13-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.142-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime_Web-WebGPU-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai/)
+[![OpenStreetMap](https://img.shields.io/badge/maps-OpenStreetMap-7EBC6F?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
+[![Tests](https://img.shields.io/badge/tests-40_passing-brightgreen)](tests/)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-lightgrey)](LICENSE)
+[![Paid APIs](https://img.shields.io/badge/paid_APIs-none-success)](#-technology-stack)
+
+**[Live demo](https://ethical0101.github.io/RDD-YOLO/)** ·
+**[Results](docs/experiments.md)** ·
+**[Datasets](docs/datasets.md)** ·
+**[Architecture](docs/architecture.md)** ·
+**[Training](docs/training.md)** ·
+**[API](docs/api.md)**
+
+</div>
 
 ---
 
-## Contents
-[Features](#features) · [Architecture](#architecture) · [Tech stack](#technology-stack) · [Installation](#installation) ·
-[Dataset](#dataset-setup) · [Training](#training) · [Evaluation](#evaluation) · [Results](#results) · [Inference](#inference) ·
-[Backend](#backend) · [Frontend](#frontend) · [Map & GPS](#map-and-geolocation) · [Severity](#severity-estimate) ·
-[Database](#database) · [Tests](#tests) · [Demo workflow](#professor-demonstration-workflow) · [Troubleshooting](#troubleshooting) ·
-[Limitations](#limitations-and-honesty-notes)
+## 📌 Overview
 
-## Features
+RDD-YOLO is a complete deep-learning system for automated road inspection, built as a university Deep Learning
+project around the paper *RDD-YOLO: Road Damage Detection Algorithm Based on Improved YOLOv8* (Li et al., 2024).
 
-| Area | What is implemented |
+* **Real training, real numbers.** Five experiments were trained on an RTX 3050 (4 GB). Every metric in this
+  repository is produced by scripts from held-out test data — nothing is typed in by hand.
+* **Research component.** The paper's three modifications (SimAM attention, GhostConv neck, bilinear upsampling)
+  are implemented on the current Ultralytics YOLO26 and compared against an identical baseline.
+* **End-to-end product.** FastAPI backend, React dashboard, image / video / live-camera detection, honest
+  geolocation (browser GPS, EXIF, manual, video GPS route), OpenStreetMap damage map, analytics and history.
+* **Zero cost.** Free and open-source stack, no API keys; the live demo runs the model in your browser.
+
+> **Which model?** The original report uses YOLOv8. This implementation uses **Ultralytics 8.4.174 / YOLO26**,
+> the current Ultralytics family (Oct 2026). The served model is **YOLO26s** (Experiment E).
+
+## 🌐 Live demo
+
+**https://ethical0101.github.io/RDD-YOLO/** — no installation, works in Chrome / Edge / Firefox.
+
+The trained YOLO26s model (ONNX, 38 MB) runs **entirely in your browser** with ONNX Runtime Web (WebGPU, or
+WebAssembly fallback). Click a sample road photo, or upload your own, then open the map. Images and detections
+never leave your browser (stored in IndexedDB). For GPU speed and the Python backend, run the project locally.
+
+| | Browser demo | Local app |
+|---|---|---|
+| Inference | your browser (WebGPU / WASM), ~0.15–1 s per image | PyTorch on CUDA, ~15 ms per image |
+| Storage | IndexedDB in your browser | SQLite (PostgreSQL-ready) |
+| Video | analysed in the browser, boxes overlaid on playback | re-encoded H.264 with boxes |
+| Model switching / training data | served model only | all checkpoints, full pipeline |
+
+## 📊 Results
+
+Measured on held-out test sets (no test image is ever used for training; see [leakage control](docs/datasets.md#leakage-control)).
+
+### Served model — Experiment E (YOLO26s), original RDD2022 test split (2,023 images)
+
+| Metric | Value |
 |---|---|
-| Dataset | Selective download of the official RDD2022 archive (HTTP range requests), full image/annotation validation, VOC→YOLO conversion, stratified split, statistics + class-distribution chart |
-| Training | Reproducible training of **Exp A: baseline YOLO26n** and **Exp B: RDD-YOLO26n** with automatic hardware-aware settings, identical initialisation, checkpointing, resume |
-| Evaluation | Test-split P / R / F1 / mAP@50 / mAP@50-95 (overall + per class), confusion matrix, PR/F1 curves, loss/mAP curves, parameters, GFLOPs, model size, measured FPS; automatic A-vs-B comparison |
-| Inference | Image (bounding boxes, class, confidence, severity), video (frame stride, annotated H.264 output, timestamps, de-duplicated detections), live webcam, CLI |
-| Geolocation | Browser GPS (with permission), manual point (typed or clicked on the map), **EXIF GPS** auto-extraction, **video GPS route** (CSV/GPX) interpolation — every record is labelled with its source; nothing is ever invented |
-| Map | OpenStreetMap + Leaflet, marker clustering, heatmap, filters (class, severity, confidence, source, time), marker popups with crop image, link to full annotated image |
-| Severity | Transparent, documented heuristic (class, relative box area, confidence, repeat reports within 15 m) → LOW / MEDIUM / HIGH |
-| Storage | SQLite via SQLAlchemy 2 (PostgreSQL-ready), images/crops/videos on disk |
-| Dashboard | Dashboard, Image Detection, Video, Live Camera, Map, Analytics, History (filter/sort/paginate/CSV export), Model, Training & Experiments |
-| Ops | PowerShell automation for setup → data → training → evaluation → startup; tests; Docker files |
+| **mAP@50** | **62.45 %** |
+| mAP@50-95 | 32.36 % |
+| Precision | 64.22 % |
+| Recall | 57.75 % |
+| F1 | 60.81 % |
+| Per class mAP@50 | D00 70.0 % · D10 61.6 % · D20 66.4 % · D40 51.8 % |
+| Size / speed | 9.95 M params · 19.4 MB · 71 FPS (RTX 3050, batch 1) |
 
-## Architecture
+### All experiments (mAP@50)
+
+| Test set | A Baseline YOLO26n | B RDD-YOLO26n | C + data | D + close-up | **E YOLO26s** |
+|---|---|---|---|---|---|
+| Original RDD2022 test (2,023) | 59.66 % | 59.46 % | 60.50 % | 61.02 % | **62.45 %** |
+| Norway + China Drone (532) | – | 12.92 % | 33.37 % | 33.71 % | **40.85 %** |
+| Ground-level potholes (221) | – | 18.34 % | 44.61 % | 55.56 % | **58.83 %** |
+| Close-up potholes (235) | – | 21.41 % | 38.06 % | 63.88 % | **67.17 %** |
+| Pavement-distress sources (1,803) | – | – | – | 22.96 % | **58.96 %** |
+
+* **A vs B (paper replication):** the RDD-YOLO modifications matched the baseline's accuracy (differences < 0.3 pp)
+  with 3.6 % fewer parameters but 8 % lower FPS at nano scale / 40 epochs — the paper's gains (YOLOv8x, 180 epochs)
+  were not reproduced in this setting, and this is reported as measured.
+* **C → E:** more (de-duplicated, licensed) data, then a larger model, improved every test set.
+* For context: the RDD-YOLO paper reports 62.5 % mAP@50 with YOLOv8x on an RTX 4090; setups differ, so numbers
+  are not directly comparable.
+
+Full tables, per-class results, training times and caveats: **[docs/experiments.md](docs/experiments.md)**.
+
+## ✨ Features
+
+| Area | What you get |
+|---|---|
+| 🧠 Detection | 4 RDD2022 classes, bounding boxes, confidence, explainable severity (LOW / MEDIUM / HIGH) |
+| 🖼️ Image | drag-and-drop JPEG / PNG / WebP / AVIF / HEIC, EXIF orientation handled |
+| 🎞️ Video | frame-stride analysis, annotated H.264 output, timestamped & de-duplicated detections, click-to-seek timeline |
+| 📷 Live camera | webcam / phone camera detection, snapshots with GPS |
+| 📍 Geolocation | **Browser GPS**, **EXIF GPS** (auto), **Manual** (type or click the map), **Route** (CSV/GPX interpolation per video timestamp) — every record labelled with its source; nothing is ever invented |
+| 🗺️ Map | OpenStreetMap + Leaflet, clustering, heatmap, filters (class, severity, confidence, source, time), popups with crops |
+| 📈 Analytics | class distribution, confidence histogram, severity by class, detections over time |
+| 🗂️ History | filter, sort, paginate, CSV export, delete, jump to map |
+| 🔬 Model & training | live metrics, loss / mAP curves, confusion matrices, PR curves, experiment comparison |
+| ⚙️ Ops | one-command setup / training / evaluation / startup scripts, 40 automated tests, Docker files |
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    subgraph Data["Data pipeline"]
+        A[RDD2022 + 9 public datasets] --> B[validate · map classes · dHash de-dup · split]
+    end
+    subgraph Train["Training (RTX 3050)"]
+        B --> C[train.py<br/>YOLO26 / RDD-YOLO] --> D[evaluate.py · compare.py]
+        C --> W[(checkpoints)]
+    end
+    subgraph Serve["Application"]
+        W --> M[Detector]
+        M --> API[FastAPI]
+        API <--> DB[(SQLite)]
+        UI[React dashboard<br/>Leaflet · Recharts] <--> API
+        W -. ONNX .-> WEB[Browser demo<br/>ONNX Runtime Web]
+    end
+```
+
+Details, data model and request flows: [docs/architecture.md](docs/architecture.md).
+
+## 🚀 Quick start (local, Windows)
+
+Requirements: Windows 10/11, Python 3.11+ (3.13 tested), Node.js 20.19+, Git; NVIDIA GPU optional (CPU works).
+
+```powershell
+git clone https://github.com/ethical0101/RDD-YOLO.git
+cd RDD-YOLO
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1     # venv, PyTorch (CUDA or CPU), deps, npm install
+powershell -ExecutionPolicy Bypass -File scripts\start_all.ps1 # builds the dashboard and opens http://localhost:8000
+```
+
+The trained checkpoints are included in `models/weights/`, so detection works immediately — no training needed.
+Try the held-out sample photos in [`demo_images/`](demo_images/).
+
+## 🔁 Reproduce the training
+
+```powershell
+scripts\prepare_data.ps1                    # download + validate RDD2022 (5 countries, ~2.4 GB)
+scripts\train.ps1                           # Experiments A + B (40 epochs each) + evaluation + comparison
+scripts\train_extended.ps1                  # Experiment C (all RDD2022 regions + pothole sets)
+.venv\Scripts\python dataset\build_extended_v2.py   # Experiment D data (close-up potholes, de-duplicated)
+bash scripts/run_experiment_e.sh            # Experiment E (YOLO26s on extended data v3)
+scripts\evaluate.ps1                        # re-evaluate on the test split
+```
+
+Hardware is detected automatically (CUDA, GPU, VRAM, CPU, RAM) and batch size / workers / AMP / model scale are
+chosen accordingly. Runs are resumable. See [docs/training.md](docs/training.md).
+
+## 🧰 Technology stack
+
+| Layer | Technology (versions verified Oct 2026) |
+|---|---|
+| Deep learning | PyTorch 2.14.1 (CUDA 13.0), Ultralytics 8.4.174 (YOLO26), OpenCV 5.0 |
+| Backend | FastAPI 0.142, Uvicorn, SQLAlchemy 2.1 (SQLite, PostgreSQL-ready), Pydantic Settings |
+| Frontend | React 19, Vite 8, TypeScript, Tailwind CSS 4, React-Leaflet 5, Leaflet.markercluster, Leaflet.heat, Recharts 3 |
+| Browser inference | ONNX Runtime Web 1.30 (WebGPU / WASM), exifr, IndexedDB |
+| Maps | OpenStreetMap tiles (free, attribution shown) |
+| Hosting | GitHub Pages (live demo) |
+
+No paid APIs, no API keys, no paid cloud.
+
+## 📁 Project structure
 
 ```
 RDD-YOLO/
-├── rdd_yolo/            core library: constants, hardware, SimAM, detector, severity, geo
-├── dataset/             download_rdd2022.py, prepare_dataset.py  (raw/ and processed/ are generated)
+├── rdd_yolo/              core library: detector, SimAM, severity, geolocation, hardware, image I/O
+├── backend/app/           FastAPI app (api/, services/, db/, core/)
+├── frontend/              React + TypeScript dashboard (also builds the browser demo)
+├── dataset/               download + validation + dataset builders (raw/ and processed/ are generated)
+├── training/              train.py, evaluate.py, compare.py
+├── inference/             command-line inference
 ├── models/
-│   ├── architectures/   yolo26-baseline.yaml, yolo26-rdd.yaml
-│   └── weights/         trained checkpoints served by the API (+ COCO yolo26n.pt for init)
-├── training/            train.py, evaluate.py, compare.py
-├── inference/           predict.py (CLI)
-├── backend/app/         FastAPI: api/, services/, db/, core/
-├── frontend/            React + Vite + TypeScript + Tailwind + React-Leaflet + Recharts
-├── experiments/         training runs, evaluation outputs, comparison (generated)
-├── outputs/             uploads, annotated images, crops, videos, SQLite DB (generated)
-├── scripts/             PowerShell automation + run_experiments.py
-├── tests/               pytest suite
-├── docs/                architecture.md, training.md, api.md, experiments.md
-├── docker/ + docker-compose.yml
-└── .env.example
+│   ├── architectures/     yolo26-baseline.yaml, yolo26-rdd.yaml
+│   └── weights/           trained checkpoints (A, B, C, D, E)
+├── experiments/           metrics, curves, confusion matrices of every run
+├── demo_images/           held-out RDD2022 test photos for demos
+├── scripts/               setup / data / train / evaluate / start / deploy automation
+├── tests/                 40 pytest tests
+└── docs/                  architecture, training, experiments, datasets, API
 ```
 
-Details and diagrams: [docs/architecture.md](docs/architecture.md).
+## 🔌 API
 
-## Technology stack
+Interactive docs at `http://127.0.0.1:8000/docs` when running locally. Main endpoints:
 
-| | Version (verified Oct 2026) |
-|---|---|
-| Python | 3.13.4 |
-| PyTorch / torchvision | 2.14.1 / 0.29.1 (CUDA 13.0 wheels) |
-| Ultralytics | 8.4.174 (YOLO26) |
-| OpenCV | 5.0.0 |
-| FastAPI / Uvicorn / SQLAlchemy | 0.142.2 / 0.54.0 / 2.1.3 |
-| Node / npm | 20.20 / 10.8 |
-| React / Vite / TypeScript / Tailwind | 19 / 8.3 / 6.0 / 4.3 |
-| React-Leaflet / Leaflet / Recharts | 5.0 / 1.9.4 / 3.10 |
-| Maps | OpenStreetMap tiles (free, attribution shown) |
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/inference/image` | detect on an image (+ optional location) |
+| POST | `/api/inference/video` | background video job (+ optional GPS route) |
+| POST | `/api/inference/frame` | webcam frame / snapshot |
+| GET | `/api/detections` | filtered, paginated history |
+| GET | `/api/map/detections` | GeoJSON for the map |
+| GET | `/api/stats` | analytics aggregates |
+| GET | `/api/model`, `/api/training/*` | model info, real training results |
 
-Development machine: Windows 11, NVIDIA RTX 3050 Laptop 4 GB, 16 CPU threads, 16 GB RAM.
+Full reference: [docs/api.md](docs/api.md).
 
-## Installation
-
-Prerequisites: Windows 10/11, Python 3.11+ (3.13 tested), Node.js 20.19+, Git; NVIDIA driver for GPU training (CPU works but is slow).
-
-```powershell
-git clone <repo> RDD-YOLO; cd RDD-YOLO
-powershell -ExecutionPolicy Bypass -File scripts\setup.ps1      # venv, CUDA PyTorch, deps, npm install, .env
-```
-
-Use `-Cpu` to force the CPU build of PyTorch. If PowerShell blocks scripts, run once:
-`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`.
-
-## Dataset setup
-
-```powershell
-scripts\prepare_data.ps1           # downloads ~2.4 GB (5 countries) and builds dataset\processed\rdd2022_yolo
-```
-
-RDD2022 (CRDDC'2022) by Arya et al., CC BY 4.0, figshare article 21431547. Countries used: Japan, India,
-Czech Republic, United States, China (motorbike). See [docs/training.md](docs/training.md#2-dataset) for the
-validation rules and the actual split statistics (16,156 / 2,017 / 2,023 images).
-
-## Training
-
-```powershell
-scripts\train.ps1                  # Exp A baseline + Exp B RDD-YOLO, 40 epochs each, then evaluation + comparison
-scripts\train.ps1 -Experiment rdd -Epochs 60
-scripts\train.ps1 -Smoke           # quick sanity check
-```
-
-Hardware is detected automatically (CUDA, GPU name, VRAM, CPU threads, RAM) and batch / workers / AMP / model
-scale are chosen accordingly (RTX 3050 4 GB → YOLO26n, batch 16 at ≈2.5 GB, AMP). Training is resumable.
-Full description: [docs/training.md](docs/training.md).
-
-## Evaluation
-
-```powershell
-scripts\evaluate.ps1               # test split metrics, plots, FPS, comparison table
-```
-
-## Results
-
-Measured on the held-out test split (2,023 images), 40 epochs each, RTX 3050 Laptop 4 GB
-(source: `experiments/comparison.json`, generated 8 Oct 2026):
-
-| Model | Precision | Recall | F1 | mAP@50 | mAP@50-95 | Params | GFLOPs | FPS (batch 1) |
-|---|---|---|---|---|---|---|---|---|
-| A · Baseline YOLO26n | 63.09 % | 55.05 % | 58.80 % | 59.66 % | 30.24 % | 2.51 M | 5.90 | 87.2 |
-| B · RDD-YOLO26n | 63.08 % | 55.28 % | 58.92 % | 59.46 % | 30.30 % | 2.42 M | 5.81 | 80.1 |
-
-**Reading:** accuracy is statistically indistinguishable (all differences < 0.3 pp, single run each);
-RDD-YOLO is 3.6 % smaller but 8 % slower. The paper's gains (YOLOv8x, 180 epochs) were not reproduced at
-nano scale / 40 epochs — reported as measured.
-
-**Experiments C, D, E — extended data.** C and D fine-tune RDD-YOLO26n on more data (all 7 RDD2022 regions,
-then +3,096 de-duplicated close-up pothole images). **E (served by the app)** is the plain latest Ultralytics
-**YOLO26s** (4× larger, COCO weights in all layers) trained 20 epochs (4.9 h, RTX 3050) on 36,223 images incl. the
-MIT-licensed Pavement Distress aggregate (SVRDD, HighRPD, …), with dHash de-duplication against all test sets.
-Measured mAP@50:
-
-| Test set | B | C | D | **E (YOLO26s)** |
-|---|---|---|---|---|
-| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % | 60.50 % | 61.02 % | **62.45 %** |
-| Norway + China_Drone held-out (532 imgs) | 12.92 % | 33.37 % | 33.71 % | **40.85 %** |
-| Ground-level potholes, external (221 imgs) | 18.34 % | 44.61 % | 55.56 % | **58.83 %** |
-| Close-up potholes, held-out (235 imgs) | 21.41 % | 38.06 % | 63.88 % | **67.17 %** |
-| Pavement-distress sources, held-out (1,803 imgs) | – | – | 22.96 % | **58.96 %** |
-
-E is not RDD-YOLO (no SimAM/GhostConv/bilinear); A vs B remains the RDD-YOLO comparison. E runs at ~71 FPS (vs 84 for the nano models).
-
-Reproduce C with `scripts\train_extended.ps1`; D adds `dataset\build_extended_v2.py`; E: `bash scripts/run_experiment_e.sh` (see docs/experiments.md).
-
-See **[docs/experiments.md](docs/experiments.md)** for per-class results and details — it contains the measured numbers of both experiments
-(written from `experiments/comparison.json` after the runs finished) and how to interpret them. The same
-results, curves, confusion matrices and PR curves are shown live on the dashboard's *Model* and
-*Training & Experiments* pages, read directly from the files in `experiments/`.
-
-## Inference
-
-* **Dashboard:** Image Detection / Video Detection / Live Camera pages.
-* **CLI:** `scripts\infer.ps1 -Source road.jpg` (also folders and videos) → `outputs\cli\<timestamp>\`.
-* **API:** `POST /api/inference/image`, `/api/inference/video`, `/api/inference/frame` — see [docs/api.md](docs/api.md).
-
-## Backend
-
-```powershell
-scripts\start_backend.ps1          # http://127.0.0.1:8000  (Swagger UI: /docs)
-```
-
-Configuration via `.env` (prefix `RDD_`, see `.env.example`): database URL, checkpoint, device, image size,
-default confidence, upload limit, video stride, CORS origins. No secrets are required.
-
-## Frontend
-
-```powershell
-scripts\start_frontend.ps1         # http://localhost:5173 (dev server, proxies /api to :8000)
-scripts\start_all.ps1              # one command: build dashboard + start backend, open http://localhost:8000
-scripts\start_all.ps1 -Dev         # backend + hot-reload dev server in two windows
-```
-
-## Map and geolocation
-
-A normal photo does **not** contain live GPS. The system therefore supports, and labels, four honest sources:
-
-| Source | How |
-|---|---|
-| **Browser GPS** | "Use my location" asks for permission (`navigator.geolocation`), accuracy is stored |
-| **Manual** | type coordinates or click the OpenStreetMap |
-| **EXIF GPS** | extracted automatically from the uploaded photo (takes priority when present) |
-| **Route** | upload a CSV (`time_s,lat,lon` or `timestamp,lat,lon`) or GPX track with a video; each detection gets the position interpolated at its timestamp, frames outside the track get none |
-
-If no source is available the detection is stored **without** coordinates and is not shown on the map.
-Location can be attached later (`PATCH /api/inferences/{id}/location`, "Attach selected location" button).
-Browser geolocation and the webcam require `localhost` or HTTPS.
-
-## Severity estimate
+## 📐 Severity estimate
 
 ```
-score = 100 × (0.45·class_weight + 0.40·min(1, √(box_area/image_area / 0.25)) + 0.15·confidence)
+score = 100 × (0.45·class_weight + 0.40·min(1, √(box_area / image_area / 0.25)) + 0.15·confidence)
         + min(15, 5 × same-class detections stored within 15 m)
-class_weight: D00 0.45 · D10 0.50 · D20 0.80 · D40 1.00
-LOW < 40 ≤ MEDIUM < 65 ≤ HIGH
+class_weight: D00 0.45 · D10 0.50 · D20 0.80 · D40 1.00       LOW < 40 ≤ MEDIUM < 65 ≤ HIGH
 ```
 
-This is a **heuristic for prioritising inspection**, not an engineering-certified pavement condition rating
-(e.g. not PCI/ASTM D6433). Every detection stores the components of its score (`severity_detail`).
+A transparent heuristic for prioritising inspection — **not** an engineering-certified pavement condition rating.
 
-## Database
-
-SQLite file `outputs/rdd_yolo.db` (tables `inferences`, `detections`; schema in
-[docs/architecture.md](docs/architecture.md#data-model)). Stored per detection: ID, class, confidence, bounding
-box, severity (+ components), latitude, longitude, location source, timestamp (UTC), image/crop reference,
-video reference + frame time, model version. Switch to PostgreSQL by setting
-`RDD_DATABASE_URL=postgresql+psycopg://user:pass@host/db` and `pip install psycopg[binary]`.
-
-## Tests
+## 🧪 Tests
 
 ```powershell
-scripts\run_tests.ps1              # pytest (core, dataset prep, architectures, inference, DB, API) + frontend build
+scripts\run_tests.ps1     # 40 pytest tests (core, dataset prep, architectures, inference, DB, API, persistence) + frontend build
 ```
 
-Tests use an isolated temporary database and CPU inference, so they can run while the GPU is training.
+## ☁️ Deployment
 
-## Professor demonstration workflow
-
-1. `scripts\start_all.ps1` → browser opens the **Dashboard** (status pill shows the loaded checkpoint).
-2. **Model** page: trained RDD-YOLO checkpoint, dataset, classes, image size, epochs, test metrics.
-3. **Image Detection**: drop a road image (e.g. from `demo_images/`, held-out test photos) → *Detect road damage*.
-4. Bounding boxes, class, confidence and severity appear (hover a row to highlight its box).
-5. Location: *Use my location* (browser GPS) or click the map (manual); an EXIF-tagged photo is located automatically.
-6. Detections are saved (checkbox on) → *View on map*.
-7. **Damage Map**: the marker appears; click it → popup with type, confidence, severity, coordinates, timestamp, crop image and full-image link. Try filters, clustering and heatmap.
-8. **Analytics** and **Detection History** show the new records.
-9. **Training & Experiments**: loss/mAP curves, confusion matrix, PR curves, and the **baseline vs RDD-YOLO** table with the architectural explanation.
-10. Optional: **Video Detection** with a dash-cam clip (+ GPS route CSV), **Live Camera**.
-
-## Deployment (free, Hugging Face Spaces)
-
-The whole app (API + dashboard + model + map) runs as one Docker container on a free Hugging Face Space
-(2 vCPU, 16 GB RAM, HTTPS - so browser GPS and the webcam work). No credit card or paid API is needed.
+**Live demo (free, GitHub Pages)** — rebuild and publish with one command:
 
 ```powershell
-cd frontend; npm run build; cd ..
-.venv\Scripts\python scripts\build_hf_space.py          # -> deploy\hf_space (code, dashboard, models, results)
-.venv\Scripts\hf auth login                              # once; paste YOUR token from huggingface.co/settings/tokens (write access)
-.venv\Scripts\python scripts\deploy_hf_space.py --space <your-hf-username>/rdd-yolo
+.venv\Scripts\python scripts\deploy_github_pages.py
 ```
 
-The Space builds automatically (~10 min) and is served at `https://<your-hf-username>-rdd-yolo.hf.space`.
-Limitations of the free tier: CPU inference (~0.1-1 s per image, videos are slow - use a high frame stride)
-and ephemeral storage (saved detections reset when the Space restarts). For a live demo with GPU speed,
-run the app locally (`scripts\start_all.ps1`).
+It exports the served model to ONNX, builds the dashboard in browser mode, snapshots the real training results
+and pushes to the `gh-pages` branch.
 
-## Troubleshooting
+**Full stack in a container** — `docker-compose.yml` and `scripts/build_hf_space.py` package the FastAPI app.
+Note: Hugging Face now requires a PRO plan for Docker Spaces, and the Docker images were not built in the
+development environment; the native Windows workflow is the tested path.
 
-| Problem | Fix |
-|---|---|
-| `torch.cuda.is_available()` is False | Install the CUDA wheel: `pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130` (needs a recent NVIDIA driver). |
-| PyTorch download stalls | Re-run `setup.ps1`; pip resumes. On flaky networks, download the wheel with `curl -C -` and `pip install` the file. |
-| CUDA out of memory | `scripts\train.ps1 -Batch 8` (or `training\train.py --batch 8`). |
-| Training is slow / RAM pressure on Windows | Lower `-Workers` (4). |
-| Dataset download 403 from S3 links | The script uses figshare instead; just re-run (it resumes). |
-| "Inference unavailable" banner | No checkpoint in `models\weights` yet — finish training, or set `RDD_MODEL_WEIGHTS`. |
-| Map tiles don't load | Needs internet access to `tile.openstreetmap.org`. |
-| Webcam / browser GPS denied | Use `http://localhost` (not an IP) or HTTPS and allow the permission. |
-| Output video doesn't play | Requires the ffmpeg binary from `imageio-ffmpeg` (installed by `requirements.txt`). |
+## 🎓 Demonstration workflow
 
-## Limitations and honesty notes
+1. `scripts\start_all.ps1` (or open the live demo).
+2. **Model** page → trained model, dataset, classes, test metrics.
+3. **Image Detection** → sample photo → boxes, confidence, severity.
+4. **Use my location** / click the map → **View on map** → marker popup.
+5. **Analytics** and **Detection History** → the new records.
+6. **Training & Experiments** → curves, confusion matrices, baseline vs RDD-YOLO, Experiments C–E.
+7. Optional: **Video Detection** with a GPS route, **Live Camera**.
 
-* Model, data and hardware differ from the RDD-YOLO paper (YOLOv8x, all RDD2022 countries, 180 epochs, RTX 4090).
-  Our numbers are **not** comparable to the paper's and are reported only for our own setup.
-* The official RDD2022 test set has no public labels; our "test" split is a held-out 10 % of the labelled data.
-* **Domain gap** (reduced but not eliminated by Experiment C). RDD2022 images come from vehicle-mounted cameras looking down the road; the median pothole
-  covers only 0.6 % of the image (only 1.6 % of training potholes cover ≥ 15 %). Ground-level, wide-angle or
-  stock photos where one pothole fills the frame are largely outside the training distribution and are often
-  missed. Use road photos taken from a vehicle (or the held-out samples in `demo_images/`) for demonstrations.
-* Severity is a heuristic, not a certified assessment.
-* Docker files are provided but were not exercised in the development environment (Docker daemon not running);
-  the native PowerShell workflow is the tested path.
-* Webcam throughput depends on network round-trips to the local API (one frame in flight).
+## ⚠️ Limitations
 
-## Citation
+* The official RDD2022 test set has no public labels; the "original test split" is a fixed held-out 10 % of the labelled data.
+* Results differ from the RDD-YOLO paper (different model scale, data and hardware) and are reported only for this setup.
+* Ground-level close-ups remain harder than vehicle-camera views (see the per-test-set results).
+* Severity is a heuristic. Free browser demo speed depends on the visitor's hardware.
+
+## 🤝 Acknowledgements & citation
 
 * Y. Li, C. Yin, Y. Lei, J. Zhang, Y. Yan, "RDD-YOLO: Road Damage Detection Algorithm Based on Improved You Only Look Once Version 8," *Applied Sciences* 14(8):3360, 2024.
 * D. Arya et al., "RDD2022: A multi-national image dataset for automatic road damage detection," *Geoscience Data Journal*, 2024.
-* L. Yang et al., "SimAM: A Simple, Parameter-Free Attention Module for CNNs," ICML 2021.
-* K. Han et al., "GhostNet: More Features from Cheap Operations," CVPR 2020.
-* Ultralytics YOLO, https://github.com/ultralytics/ultralytics (AGPL-3.0).
+* L. Yang et al., "SimAM: A Simple, Parameter-Free Attention Module for CNNs," ICML 2021 · K. Han et al., "GhostNet," CVPR 2020.
+* [Ultralytics YOLO](https://github.com/ultralytics/ultralytics) (AGPL-3.0) · [ONNX Runtime](https://onnxruntime.ai/) · [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
+* All training datasets and their licenses: [docs/datasets.md](docs/datasets.md).
+
+## 📄 License
+
+Released under the [GNU AGPL-3.0](LICENSE), matching the license of the Ultralytics YOLO framework it builds on.
+Datasets keep their own licenses (CC BY 4.0, MIT, Apache-2.0) — see [docs/datasets.md](docs/datasets.md).

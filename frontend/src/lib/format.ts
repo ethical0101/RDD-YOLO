@@ -31,3 +31,7 @@ export const coord = (lat: number | null, lon: number | null) =>
 export const dateTime = (iso: string | null | undefined) =>
   iso ? new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '—'
 export const intFmt = (v: number | null | undefined) => (v === null || v === undefined ? '—' : v.toLocaleString())
+
+/** 'cpu' -> CPU, '0' -> CUDA:0, anything else (e.g. WebGPU in the browser demo) as is. */
+export const deviceLabel = (d: string | null | undefined) =>
+  !d ? '—' : d === 'cpu' ? 'CPU' : /^\d+$/.test(d) ? `CUDA:${d}` : d

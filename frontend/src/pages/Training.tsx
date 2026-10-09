@@ -3,6 +3,7 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContai
 import { useApi } from '../lib/api'
 import { CLASS_CODES, CLASS_NAMES, intFmt, pct } from '../lib/format'
 import type { ExperimentDetail, ExperimentSummary } from '../lib/types'
+import { asset } from '../lib/staticMode'
 import { Card, EmptyState, ErrorState, Notice, PageHeader, Spinner, cx } from '../components/ui'
 
 const axis = { stroke: '#c3c2b7', tick: { fill: '#898781', fontSize: 11 }, tickLine: false }
@@ -161,8 +162,8 @@ function RunDetail({ d }: { d: ExperimentDetail }) {
 
 function Figure({ name, url }: { name: string; url: string }) {
   return (
-    <a href={url} target="_blank" rel="noreferrer" className="group block overflow-hidden rounded-lg border border-slate-200 bg-white">
-      <img src={url} alt={name} loading="lazy" className="aspect-[4/3] w-full object-contain bg-white transition group-hover:opacity-90" />
+    <a href={asset(url)} target="_blank" rel="noreferrer" className="group block overflow-hidden rounded-lg border border-slate-200 bg-white">
+      <img src={asset(url)} alt={name} loading="lazy" className="aspect-[4/3] w-full object-contain bg-white transition group-hover:opacity-90" />
       <div className="border-t border-slate-100 px-3 py-1.5 text-xs text-slate-600">{name}</div>
     </a>
   )

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { STATIC } from './staticMode'
 
 export class ApiError extends Error {
   status: number
@@ -28,10 +29,12 @@ export async function apiGet<T>(path: string, params?: Record<string, string | n
     ? '?' + new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
         .map(([k, v]) => [k, String(v)])).toString()
     : ''
+  if (STATIC) return (await (await import('./staticApi')).staticRequest('GET', `${path}${qs}`)) as T
   return parse<T>(await fetch(`/api${path}${qs}`))
 }
 
 export async function apiSend<T>(path: string, method: 'POST' | 'PATCH' | 'DELETE', body?: FormData | object): Promise<T> {
+  if (STATIC) return (await (await import('./staticApi')).staticRequest(method, path, body)) as T
   const init: RequestInit = { method }
   if (body instanceof FormData) init.body = body
   else if (body) {
