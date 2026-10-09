@@ -1,0 +1,49 @@
+{
+  "weights": "experiments\\yolo26s_full\\weights\\best.pt",
+  "split": "test",
+  "tag": "test_closeup",
+  "dataset": "dataset\\processed\\rdd2022_extended_v3\\data_test_closeup.yaml",
+  "images": 235,
+  "imgsz": 640,
+  "ultralytics_version": "8.4.174",
+  "evaluated_utc": "2026-10-09T01:57:12.813909+00:00",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "overall": {
+    "precision": 0.6950373591947652,
+    "recall": 0.638430691203379,
+    "f1": 0.6655325285227437,
+    "mAP50": 0.6717370667582006,
+    "mAP50_95": 0.35162166000594286
+  },
+  "per_class": {
+    "D40": {
+      "name": "Pothole",
+      "precision": 0.6950373591947652,
+      "recall": 0.638430691203379,
+      "f1": 0.6655325285227437,
+      "mAP50": 0.6717370667582006,
+      "mAP50_95": 0.35162166000594286,
+      "instances": 639
+    }
+  },
+  "parameters": 9950960,
+  "gflops": 22.75,
+  "model_size_mb": 19.37,
+  "ultralytics_val_speed_ms": {
+    "preprocess": 1.071,
+    "inference": 11.146,
+    "loss": 0.001,
+    "postprocess": 0.966
+  },
+  "speed_benchmark": {
+    "images": 200,
+    "batch": 1,
+    "imgsz": 640,
+    "device": "0",
+    "end_to_end_ms_mean": 13.46,
+    "end_to_end_ms_median": 12.88,
+    "inference_ms_mean": 10.7,
+    "fps_end_to_end": 74.3,
+    "fps_inference_only": 93.4
+  }
+}

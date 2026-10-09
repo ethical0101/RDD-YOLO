@@ -191,6 +191,43 @@ def main() -> None:
         L += ["", "Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). "
               "Each step adds data *and* epochs, so improvements are not attributable to data alone.", ""]
 
+    # ---------------- Experiment E (YOLO26s, full COCO init, extended v3)
+    e_info = load(EXPERIMENTS_DIR / "yolo26s_full" / "run_info.json")
+    if e_info:
+        st = load(ROOT / "dataset" / "processed" / "rdd2022_extended_v3" / "dataset_stats_v3.json") or {}
+        sk = st.get("skipped", {})
+        n_leak = sum(v for k, v in sk.items() if "duplicates a test image" in k)
+        n_added = sum(v for k, v in st.get("added", {}).items() if k.endswith("/train"))
+        L += ["## Experiment E — YOLO26s (latest Ultralytics architecture, small scale)", "",
+              f"Unmodified YOLO26**s** ({e_info['scale']} scale) initialised with the official COCO weights in *all* "
+              f"shape-compatible layers ({e_info['initialisation'].get('transferred_tensors')} of "
+              f"{e_info['initialisation'].get('model_tensors')} tensors), trained for {e_info['results']['epochs_completed']} "
+              f"epochs ({e_info['train_time_hours']:.2f} h, batch 8, {e_info['hardware'].get('gpu_name')}) on "
+              f"{st.get('images', {}).get('train', 'n/a'):,} training images: the v2 set plus {n_added:,} images from the "
+              "MIT-licensed *Pavement Distress Detection* aggregate (Hugging Face Deeksha9; sources SVRDD, HighRPD, RD0 and "
+              "an unnamed 'archive' set). Its RDD2022 copy and older Japanese RDD release were not used (they overlap our "
+              f"test split); {n_leak:,} further images matching a held-out test image were removed by dHash. Its test split "
+              f"forms a fifth held-out set (**test_pavement**, {st.get('images', {}).get('test_pavement', 0):,} images). "
+              "Note: E is not RDD-YOLO (no SimAM/GhostConv/bilinear) — it is the plain latest architecture at a larger scale.", "",
+              "| Test set | Metric | D (RDD-YOLO26n ext2) | E (YOLO26s) | Δ (pp) |", "|---|---|---|---|---|"]
+        for tag, label in (("test", "Original RDD2022 test"), ("test_rdd_new", "Norway + China_Drone"),
+                           ("test_external", "Ground-level potholes"), ("test_closeup", "Close-up potholes"),
+                           ("test_pavement", "Pavement-distress sources (new)")):
+            a = load(EXPERIMENTS_DIR / "rdd_yolo26n_ext2" / f"eval_{tag}" / "metrics.json")
+            b = load(EXPERIMENTS_DIR / "yolo26s_full" / f"eval_{tag}" / "metrics.json")
+            if not (a and b):
+                continue
+            for k, lbl in (("precision", "Precision"), ("recall", "Recall"), ("mAP50", "mAP@50"), ("mAP50_95", "mAP@50-95")):
+                L.append(f"| {label} ({b['images']} imgs) | {lbl} | {pct(a['overall'][k])} | {pct(b['overall'][k])} | "
+                         f"{100 * (b['overall'][k] - a['overall'][k]):+.2f} |")
+        a = load(EXPERIMENTS_DIR / "rdd_yolo26n_ext2" / "eval_test" / "metrics.json")
+        b = load(EXPERIMENTS_DIR / "yolo26s_full" / "eval_test" / "metrics.json")
+        if a and b:
+            L += ["", f"Size/speed: {a['parameters']:,} → {b['parameters']:,} parameters, {a['model_size_mb']} → "
+                  f"{b['model_size_mb']} MB, {a['speed_benchmark']['fps_end_to_end']} → {b['speed_benchmark']['fps_end_to_end']} "
+                  "FPS end-to-end (batch 1). D and E differ in architecture, scale, initialisation, data and epochs at once, "
+                  "so the comparison shows the overall effect, not the contribution of any single factor.", ""]
+
     L += ["## Generated artefacts", "",
           "* `experiments/<run>/results.csv` / `results.png` — per-epoch losses (box, cls, L1) and val P/R/mAP",
           "* `experiments/<run>/eval_test/` — confusion matrix (raw + normalised), PR / P / R / F1 curves, prediction mosaics, `metrics.json`",

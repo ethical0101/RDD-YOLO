@@ -29,6 +29,7 @@ experiments/logs/
 !models/weights/rdd_yolo26n_best.pt
 !models/weights/rdd_yolo26n_ext_best.pt
 !models/weights/rdd_yolo26n_ext2_best.pt
+!models/weights/yolo26s_full_best.pt
 
 # Local tool config
 .claude/
@@ -48,3 +49,4 @@ Thumbs.db
 
 # Local safety copies of checkpoints
 models/backup_*/
+experiments/disk_monitor.log

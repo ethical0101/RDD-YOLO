@@ -1,0 +1,32 @@
+{
+  "model_name": "Experiment E - YOLO26s, full COCO init, extended data v3",
+  "experiment": "baseline",
+  "run_name": "yolo26s_full",
+  "architecture": "models/architectures/yolo26-baseline.yaml",
+  "scale": "s",
+  "ultralytics_version": "8.4.174",
+  "dataset": "dataset\\processed\\rdd2022_extended_v3\\data.yaml",
+  "imgsz": 640,
+  "epochs_requested": 20,
+  "results": {
+    "epochs_completed": 20,
+    "best_epoch_val": {
+      "epoch": 20,
+      "precision": 0.66725,
+      "recall": 0.55546,
+      "f1": 0.6062446287345322,
+      "mAP50": 0.61394,
+      "mAP50_95": 0.32715
+    },
+    "last_epoch_val": {
+      "epoch": 20,
+      "precision": 0.66725,
+      "recall": 0.55546,
+      "f1": 0.6062446287345322,
+      "mAP50": 0.61394,
+      "mAP50_95": 0.32715
+    }
+  },
+  "trained_on": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "finished_utc": "2026-10-09T01:55:00.375793+00:00"
+}

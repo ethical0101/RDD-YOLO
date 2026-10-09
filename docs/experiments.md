@@ -109,6 +109,35 @@ Fine-tuned from Experiment C for 15 epochs (1.41 h, NVIDIA GeForce RTX 3050 Lapt
 
 Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). Each step adds data *and* epochs, so improvements are not attributable to data alone.
 
+## Experiment E — YOLO26s (latest Ultralytics architecture, small scale)
+
+Unmodified YOLO26**s** (s scale) initialised with the official COCO weights in *all* shape-compatible layers (696 of 708 tensors), trained for 20 epochs (4.88 h, batch 8, NVIDIA GeForce RTX 3050 Laptop GPU) on 36,223 training images: the v2 set plus 11,657 images from the MIT-licensed *Pavement Distress Detection* aggregate (Hugging Face Deeksha9; sources SVRDD, HighRPD, RD0 and an unnamed 'archive' set). Its RDD2022 copy and older Japanese RDD release were not used (they overlap our test split); 3,653 further images matching a held-out test image were removed by dHash. Its test split forms a fifth held-out set (**test_pavement**, 1,803 images). Note: E is not RDD-YOLO (no SimAM/GhostConv/bilinear) — it is the plain latest architecture at a larger scale.
+
+| Test set | Metric | D (RDD-YOLO26n ext2) | E (YOLO26s) | Δ (pp) |
+|---|---|---|---|---|
+| Original RDD2022 test (2023 imgs) | Precision | 64.74 | 64.22 | -0.52 |
+| Original RDD2022 test (2023 imgs) | Recall | 56.97 | 57.75 | +0.77 |
+| Original RDD2022 test (2023 imgs) | mAP@50 | 61.02 | 62.45 | +1.42 |
+| Original RDD2022 test (2023 imgs) | mAP@50-95 | 30.87 | 32.36 | +1.48 |
+| Norway + China_Drone (532 imgs) | Precision | 49.19 | 54.60 | +5.41 |
+| Norway + China_Drone (532 imgs) | Recall | 36.19 | 42.02 | +5.83 |
+| Norway + China_Drone (532 imgs) | mAP@50 | 33.71 | 40.85 | +7.14 |
+| Norway + China_Drone (532 imgs) | mAP@50-95 | 16.12 | 19.98 | +3.85 |
+| Ground-level potholes (221 imgs) | Precision | 63.34 | 62.84 | -0.50 |
+| Ground-level potholes (221 imgs) | Recall | 51.31 | 52.84 | +1.53 |
+| Ground-level potholes (221 imgs) | mAP@50 | 55.56 | 58.83 | +3.27 |
+| Ground-level potholes (221 imgs) | mAP@50-95 | 24.42 | 26.65 | +2.23 |
+| Close-up potholes (235 imgs) | Precision | 70.52 | 69.50 | -1.02 |
+| Close-up potholes (235 imgs) | Recall | 61.03 | 63.84 | +2.81 |
+| Close-up potholes (235 imgs) | mAP@50 | 63.88 | 67.17 | +3.29 |
+| Close-up potholes (235 imgs) | mAP@50-95 | 31.61 | 35.16 | +3.55 |
+| Pavement-distress sources (new) (1803 imgs) | Precision | 42.48 | 66.70 | +24.22 |
+| Pavement-distress sources (new) (1803 imgs) | Recall | 27.51 | 51.42 | +23.91 |
+| Pavement-distress sources (new) (1803 imgs) | mAP@50 | 22.96 | 58.96 | +36.00 |
+| Pavement-distress sources (new) (1803 imgs) | mAP@50-95 | 10.61 | 31.14 | +20.53 |
+
+Size/speed: 2,415,600 → 9,950,960 parameters, 4.97 → 19.37 MB, 83.7 → 70.7 FPS end-to-end (batch 1). D and E differ in architecture, scale, initialisation, data and epochs at once, so the comparison shows the overall effect, not the contribution of any single factor.
+
 ## Generated artefacts
 
 * `experiments/<run>/results.csv` / `results.png` — per-epoch losses (box, cls, L1) and val P/R/mAP
