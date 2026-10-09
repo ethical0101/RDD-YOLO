@@ -147,7 +147,7 @@ Measured mAP@50:
 
 E is not RDD-YOLO (no SimAM/GhostConv/bilinear); A vs B remains the RDD-YOLO comparison. E runs at ~71 FPS (vs 84 for the nano models).
 
-Reproduce C with `scripts	rain_extended.ps1`; D adds `datasetuild_extended_v2.py`; E: `bash scripts/run_experiment_e.sh` (see docs/experiments.md).
+Reproduce C with `scripts\train_extended.ps1`; D adds `dataset\build_extended_v2.py`; E: `bash scripts/run_experiment_e.sh` (see docs/experiments.md).
 
 See **[docs/experiments.md](docs/experiments.md)** for per-class results and details — it contains the measured numbers of both experiments
 (written from `experiments/comparison.json` after the runs finished) and how to interpret them. The same
@@ -240,7 +240,7 @@ The whole app (API + dashboard + model + map) runs as one Docker container on a 
 
 ```powershell
 cd frontend; npm run build; cd ..
-.venv\Scripts\python scriptsuild_hf_space.py          # -> deploy\hf_space (code, dashboard, models, results)
+.venv\Scripts\python scripts\build_hf_space.py          # -> deploy\hf_space (code, dashboard, models, results)
 .venv\Scripts\hf auth login                              # once; paste YOUR token from huggingface.co/settings/tokens (write access)
 .venv\Scripts\python scripts\deploy_hf_space.py --space <your-hf-username>/rdd-yolo
 ```
