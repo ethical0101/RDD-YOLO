@@ -84,7 +84,7 @@ External pothole sets (Roboflow exports, CC BY 4.0) contribute **only the pothol
 
 Note: C received more data *and* more epochs than B, so the gain cannot be attributed to the data alone.
 
-## Experiment D — + close-up pothole datasets (served model)
+## Experiment D — + close-up pothole datasets
 
 Fine-tuned from Experiment C for 15 epochs (1.41 h, NVIDIA GeForce RTX 3050 Laptop GPU) on 24,566 training images. Added 3,096 close-up/ground-level pothole training images from six public datasets with stated licenses (CC BY 4.0: manot/pothole-segmentation, manot/pothole-segmentation2, keremberke/pothole-segmentation; MIT: rupesh002 ×2; Apache-2.0: sumadixSk MWPD). De-duplication by 64-bit dHash (incl. mirrored images, Hamming ≤ 6) removed 2,322 duplicate images, of which 448 matched a held-out test image (leakage prevented). Their own test splits form a new held-out **close-up pothole test set** (235 images).
 
@@ -107,9 +107,9 @@ Fine-tuned from Experiment C for 15 epochs (1.41 h, NVIDIA GeForce RTX 3050 Lapt
 | Close-up potholes (new) (235 imgs) | mAP@50 | 21.41 | 38.06 | 63.88 |
 | Close-up potholes (new) (235 imgs) | mAP@50-95 | 7.82 | 14.93 | 31.61 |
 
-Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). Each step adds data *and* epochs, so improvements are not attributable to data alone.
+Each step adds data *and* epochs, so improvements are not attributable to data alone.
 
-## Experiment E — YOLO26s (latest Ultralytics architecture, small scale)
+## Experiment E — YOLO26s (latest Ultralytics architecture, small scale) — served model
 
 Unmodified YOLO26**s** (s scale) initialised with the official COCO weights in *all* shape-compatible layers (696 of 708 tensors), trained for 20 epochs (4.88 h, batch 8, NVIDIA GeForce RTX 3050 Laptop GPU) on 36,223 training images: the v2 set plus 11,657 images from the MIT-licensed *Pavement Distress Detection* aggregate (Hugging Face Deeksha9; sources SVRDD, HighRPD, RD0 and an unnamed 'archive' set). Its RDD2022 copy and older Japanese RDD release were not used (they overlap our test split); 3,653 further images matching a held-out test image were removed by dHash. Its test split forms a fifth held-out set (**test_pavement**, 1,803 images). Note: E is not RDD-YOLO (no SimAM/GhostConv/bilinear) — it is the plain latest architecture at a larger scale.
 
@@ -136,7 +136,7 @@ Unmodified YOLO26**s** (s scale) initialised with the official COCO weights in *
 | Pavement-distress sources (new) (1803 imgs) | mAP@50 | 22.96 | 58.96 | +36.00 |
 | Pavement-distress sources (new) (1803 imgs) | mAP@50-95 | 10.61 | 31.14 | +20.53 |
 
-Size/speed: 2,415,600 → 9,950,960 parameters, 4.97 → 19.37 MB, 83.7 → 70.7 FPS end-to-end (batch 1). D and E differ in architecture, scale, initialisation, data and epochs at once, so the comparison shows the overall effect, not the contribution of any single factor.
+Size/speed: 2,415,600 → 9,950,960 parameters, 4.97 → 19.37 MB, 83.7 → 70.7 FPS end-to-end (batch 1). **Experiment E is the model served by the application** (`models/weights/yolo26s_full_best.pt`). D and E differ in architecture, scale, initialisation, data and epochs at once, so the comparison shows the overall effect, not the contribution of any single factor.
 
 ## Generated artefacts
 

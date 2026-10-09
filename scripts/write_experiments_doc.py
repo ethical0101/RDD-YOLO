@@ -171,7 +171,7 @@ def main() -> None:
         n_train = sum(v for k, v in added.items() if k.endswith("/train"))
         n_dup = sum(v for k, v in skipped.items() if "duplicate" in k)
         n_leak = sum(v for k, v in skipped.items() if "duplicates a test image" in k) + st.get("removed_round1_external_duplicates", 0)
-        L += ["## Experiment D — + close-up pothole datasets (served model)", "",
+        L += ["## Experiment D — + close-up pothole datasets", "",
               f"Fine-tuned from Experiment C for {d_info['results']['epochs_completed']} epochs "
               f"({d_info['train_time_hours']:.2f} h, {d_info['hardware'].get('gpu_name')}) on "
               f"{st.get('images', {}).get('train', 'n/a'):,} training images. Added {n_train:,} close-up/ground-level pothole "
@@ -188,8 +188,7 @@ def main() -> None:
                 continue
             for k, lbl in (("precision", "Precision"), ("recall", "Recall"), ("mAP50", "mAP@50"), ("mAP50_95", "mAP@50-95")):
                 L.append(f"| {label} ({ms[2]['images']} imgs) | {lbl} | " + " | ".join(pct(m['overall'][k]) for m in ms) + " |")
-        L += ["", "Experiment D is the model served by the application (`models/weights/rdd_yolo26n_ext2_best.pt`). "
-              "Each step adds data *and* epochs, so improvements are not attributable to data alone.", ""]
+        L += ["", "Each step adds data *and* epochs, so improvements are not attributable to data alone.", ""]
 
     # ---------------- Experiment E (YOLO26s, full COCO init, extended v3)
     e_info = load(EXPERIMENTS_DIR / "yolo26s_full" / "run_info.json")
@@ -198,7 +197,7 @@ def main() -> None:
         sk = st.get("skipped", {})
         n_leak = sum(v for k, v in sk.items() if "duplicates a test image" in k)
         n_added = sum(v for k, v in st.get("added", {}).items() if k.endswith("/train"))
-        L += ["## Experiment E — YOLO26s (latest Ultralytics architecture, small scale)", "",
+        L += ["## Experiment E — YOLO26s (latest Ultralytics architecture, small scale) — served model", "",
               f"Unmodified YOLO26**s** ({e_info['scale']} scale) initialised with the official COCO weights in *all* "
               f"shape-compatible layers ({e_info['initialisation'].get('transferred_tensors')} of "
               f"{e_info['initialisation'].get('model_tensors')} tensors), trained for {e_info['results']['epochs_completed']} "
@@ -225,7 +224,7 @@ def main() -> None:
         if a and b:
             L += ["", f"Size/speed: {a['parameters']:,} → {b['parameters']:,} parameters, {a['model_size_mb']} → "
                   f"{b['model_size_mb']} MB, {a['speed_benchmark']['fps_end_to_end']} → {b['speed_benchmark']['fps_end_to_end']} "
-                  "FPS end-to-end (batch 1). D and E differ in architecture, scale, initialisation, data and epochs at once, "
+                  "FPS end-to-end (batch 1). **Experiment E is the model served by the application** (`models/weights/yolo26s_full_best.pt`). D and E differ in architecture, scale, initialisation, data and epochs at once, "
                   "so the comparison shows the overall effect, not the contribution of any single factor.", ""]
 
     L += ["## Generated artefacts", "",

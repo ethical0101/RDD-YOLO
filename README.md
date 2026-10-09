@@ -131,18 +131,23 @@ Measured on the held-out test split (2,023 images), 40 epochs each, RTX 3050 Lap
 RDD-YOLO is 3.6 % smaller but 8 % slower. The paper's gains (YOLOv8x, 180 epochs) were not reproduced at
 nano scale / 40 epochs — reported as measured.
 
-**Experiments C and D — extended data.** C: RDD-YOLO26n fine-tuned on all 7 RDD2022 regions + two public
-pothole sets (21,477 images, 25 epochs, 1.9 h). D (**served by the app**): C fine-tuned on +3,096 de-duplicated
-close-up pothole images from six licensed public datasets (15 epochs, 1.4 h). Measured mAP@50, B → C → D:
+**Experiments C, D, E — extended data.** C and D fine-tune RDD-YOLO26n on more data (all 7 RDD2022 regions,
+then +3,096 de-duplicated close-up pothole images). **E (served by the app)** is the plain latest Ultralytics
+**YOLO26s** (4× larger, COCO weights in all layers) trained 20 epochs (4.9 h, RTX 3050) on 36,223 images incl. the
+MIT-licensed Pavement Distress aggregate (SVRDD, HighRPD, …), with dHash de-duplication against all test sets.
+Measured mAP@50:
 
-| Test set | B | C | **D** |
-|---|---|---|---|
-| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % | 60.50 % | **61.02 %** |
-| Norway + China_Drone held-out (532 imgs) | 12.92 % | 33.37 % | **33.71 %** |
-| Ground-level potholes, external (221 imgs) | 18.34 % | 44.61 % | **55.56 %** |
-| Close-up potholes, new held-out (235 imgs) | 21.41 % | 38.06 % | **63.88 %** |
+| Test set | B | C | D | **E (YOLO26s)** |
+|---|---|---|---|---|
+| Original RDD2022 test (unchanged, 2,023 imgs) | 59.46 % | 60.50 % | 61.02 % | **62.45 %** |
+| Norway + China_Drone held-out (532 imgs) | 12.92 % | 33.37 % | 33.71 % | **40.85 %** |
+| Ground-level potholes, external (221 imgs) | 18.34 % | 44.61 % | 55.56 % | **58.83 %** |
+| Close-up potholes, held-out (235 imgs) | 21.41 % | 38.06 % | 63.88 % | **67.17 %** |
+| Pavement-distress sources, held-out (1,803 imgs) | – | – | 22.96 % | **58.96 %** |
 
-Reproduce C with `scripts	rain_extended.ps1`; D additionally runs `datasetuild_extended_v2.py` (see docs/experiments.md).
+E is not RDD-YOLO (no SimAM/GhostConv/bilinear); A vs B remains the RDD-YOLO comparison. E runs at ~71 FPS (vs 84 for the nano models).
+
+Reproduce C with `scripts	rain_extended.ps1`; D adds `datasetuild_extended_v2.py`; E: `bash scripts/run_experiment_e.sh` (see docs/experiments.md).
 
 See **[docs/experiments.md](docs/experiments.md)** for per-class results and details — it contains the measured numbers of both experiments
 (written from `experiments/comparison.json` after the runs finished) and how to interpret them. The same
