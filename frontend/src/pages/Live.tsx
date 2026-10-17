@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Camera, CameraOff, Save } from 'lucide-react'
 import { apiSend } from '../lib/api'
+import { loadSettings } from '../lib/settings'
 import { CLASS_COLORS, pct } from '../lib/format'
 import { useBrowserLocation } from '../lib/geolocation'
 import type { DetectionResult } from '../lib/types'
@@ -15,7 +16,7 @@ export default function Live() {
   const [running, setRunning] = useState(false)
   const [dets, setDets] = useState<DetectionResult[]>([])
   const [stats, setStats] = useState({ fps: 0, ms: 0 })
-  const [conf, setConf] = useState(0.3)
+  const [conf, setConf] = useState(() => loadSettings().defaultConf)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const geo = useBrowserLocation()

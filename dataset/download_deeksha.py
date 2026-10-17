@@ -23,6 +23,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from download_rdd2022 import HttpRangeFile  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from rdd_yolo.storage import guard, log_event  # noqa: E402
+
 URL = "https://huggingface.co/datasets/Deeksha9/pavement-distress-detection/resolve/main/split.zip"
 SIZE = 20382190784
 KEEP = ("1.SVRDD", "2.archive", "4.HighRPD", "5.Potholes", "7.RD0", "8.Attain")
@@ -39,6 +42,8 @@ def main() -> None:
     sel.sort(key=lambda i: i.header_offset)
     total = sum(i.compress_size for i in sel)
     print(f"selected {len(sel)} files, {total / 1e9:.2f} GB", flush=True)
+    missing = sum(i.file_size for i in sel if not ((OUT / i.filename).exists() and (OUT / i.filename).stat().st_size == i.file_size))
+    guard.require(missing, "Deeksha pavement-distress subset")
     done, t0 = 0, time.time()
     for k, info in enumerate(sel, 1):
         dest = OUT / info.filename
@@ -55,6 +60,7 @@ def main() -> None:
             rate = remote.bytes_fetched / max(time.time() - t0, 1e-6) / 1e6
             print(f"  {k}/{len(sel)} files, {done / 1e9:.2f}/{total / 1e9:.2f} GB, {rate:.1f} MB/s", flush=True)
     (OUT / ".complete").write_text("ok")
+    log_event("download", dataset="deeksha_pavement", files=len(sel))
     print("done", flush=True)
 
 

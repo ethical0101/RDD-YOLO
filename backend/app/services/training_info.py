@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import csv
+import re
+import time
 import json
 from pathlib import Path
 
@@ -47,7 +49,8 @@ def list_experiments() -> list[dict]:
         info = _read_json(d / "run_info.json") or {}
         rows = _read_results_csv(d / "results.csv")
         test = _read_json(d / "eval_test" / "metrics.json")
-        status = "completed" if info.get("finished_utc") else ("running_or_interrupted" if rows else "pending")
+        status = ("aborted" if (d / "ABORTED.txt").exists() else "completed" if info.get("finished_utc")
+                  else "running_or_interrupted" if rows else "pending")
         exps.append({
             "name": d.name, "title": info.get("title"), "experiment": info.get("experiment"), "status": status,
             "epochs_completed": len(rows), "epochs_requested": (info.get("args") or {}).get("epochs"),
@@ -95,3 +98,60 @@ def dataset_stats() -> dict | None:
     stats["validation"] = {k: report.get(k) for k in ("images_total", "images_valid", "images_with_target_damage",
                                                       "issue_count", "issue_summary", "ignored_labels", "countries")}
     return stats
+
+
+# Ultralytics progress line, e.g. "  3/10  2.43G  1.71  1.83  0.013  17  640: 52% ... 2370/4528 5.2it/s 7:23<6:51"
+_PROGRESS = re.compile(r"^\s*(\d+)/(\d+)\s+[\d.]+G\s.*?(\d+)%.*?(\d+)/(\d+)\s+([\d.]+)(it/s|s/it)\s+([\d:]+)<([\d:?]+)")
+
+
+def _secs(t: str) -> float | None:
+    try:
+        parts = [float(x) for x in t.split(":")]
+    except ValueError:
+        return None
+    s = 0.0
+    for x in parts:
+        s = s * 60 + x
+    return s
+
+
+def live_progress(max_age_s: float = 300) -> list[dict]:
+    """Progress of training runs whose log was written in the last few minutes, parsed from the real
+    experiments/logs/<run>_train.log (Ultralytics console output). Returns [] when nothing is training."""
+    logs = get_settings().experiments_dir / "logs"
+    out = []
+    if not logs.exists():
+        return out
+    now = time.time()
+    for log in logs.glob("*_train.log"):
+        age = now - log.stat().st_mtime
+        if age > max_age_s:
+            continue
+        with log.open("rb") as fh:
+            fh.seek(max(0, log.stat().st_size - 20000))
+            text = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", fh.read().decode("utf-8", "replace"))
+            tail = text.replace("\r", "\n").splitlines()
+        m = next((_PROGRESS.search(ln) for ln in reversed(tail) if _PROGRESS.search(ln)), None)
+        if not m:
+            out.append({"run": log.name[:-10], "phase": "starting / validating", "log_age_s": round(age)})
+            continue
+        ep, eps, _, it, its, rate, unit, el, rem = m.groups()
+        ep, eps, it, its = int(ep), int(eps), int(it), int(its)
+        speed = float(rate) if unit == "it/s" else 1 / float(rate)
+        epoch_s = its / speed if speed else None
+        rem_s = _secs(rem)
+        run = log.name[:-10]
+        rows = _read_results_csv(get_settings().experiments_dir / run / "results.csv")
+        val_last = rows[-1].get("metrics/mAP50(B)") if rows else None
+        out.append({"run": run, "phase": "training", "epoch": ep, "epochs": eps, "batch": it, "batches": its,
+                    "iter_per_s": round(speed, 2), "epoch_eta_s": rem_s,
+                    "run_eta_s": round((rem_s or 0) + (eps - ep) * (epoch_s or 0) * 1.08) if epoch_s else None,  # +8 % validation
+                    "progress": round(((ep - 1) + it / its) / eps, 4), "log_age_s": round(age),
+                    "epochs_logged": len(rows), "last_val_mAP50": val_last,
+                    "history": [{"epoch": int(r.get("epoch", i + 1)), "mAP50": r.get("metrics/mAP50(B)"),
+                                 "mAP50_95": r.get("metrics/mAP50-95(B)")} for i, r in enumerate(rows)]})
+    return out
+
+
+def dataset_catalog() -> dict | None:
+    return _read_json(get_settings().experiments_dir.parent / "docs" / "datasets" / "dataset_manifest.json")

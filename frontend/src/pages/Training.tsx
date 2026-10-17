@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { useApi } from '../lib/api'
+import { apiGet, useApi } from '../lib/api'
 import { CLASS_CODES, CLASS_NAMES, intFmt, pct } from '../lib/format'
 import type { ExperimentDetail, ExperimentSummary } from '../lib/types'
 import { asset } from '../lib/staticMode'
@@ -24,6 +24,7 @@ export default function Training() {
     <>
       <PageHeader title="Training & Experiments" subtitle="Results produced by the actual training and evaluation runs in experiments/. Nothing here is typed in by hand." />
       <div className="space-y-6">
+        <LiveProgress />
         <Architecture />
         <Comparison cmp={cmp.data} loading={cmp.loading} />
         <Card title="Experiment runs" bodyClass="p-0">
@@ -52,7 +53,7 @@ export default function Training() {
 }
 
 function Status({ s }: { s: string }) {
-  const m: Record<string, string> = { completed: 'bg-emerald-50 text-emerald-800 ring-emerald-200', running_or_interrupted: 'bg-amber-50 text-amber-900 ring-amber-200', pending: 'bg-slate-50 text-slate-600 ring-slate-200' }
+  const m: Record<string, string> = { completed: 'bg-emerald-50 text-emerald-800 ring-emerald-200', running_or_interrupted: 'bg-amber-50 text-amber-900 ring-amber-200', pending: 'bg-slate-50 text-slate-600 ring-slate-200', aborted: 'bg-red-50 text-red-800 ring-red-200' }
   return <span className={cx('rounded-md px-2 py-0.5 text-xs font-medium ring-1', m[s] ?? m.pending)}>{s === 'running_or_interrupted' ? 'running / interrupted' : s}</span>
 }
 
@@ -166,5 +167,39 @@ function Figure({ name, url }: { name: string; url: string }) {
       <img src={asset(url)} alt={name} loading="lazy" className="aspect-[4/3] w-full object-contain bg-white transition group-hover:opacity-90" />
       <div className="border-t border-slate-100 px-3 py-1.5 text-xs text-slate-600">{name}</div>
     </a>
+  )
+}
+
+interface LiveRun {
+  run: string; phase: string; epoch?: number; epochs?: number; batch?: number; batches?: number; iter_per_s?: number
+  run_eta_s?: number | null; progress?: number; log_age_s: number; last_val_mAP50?: number | null; epochs_logged?: number
+}
+
+const hm = (s?: number | null) => (s == null ? '—' : `${Math.floor(s / 3600)} h ${String(Math.round((s % 3600) / 60)).padStart(2, '0')} min`)
+
+/** Runs currently training, parsed from the real console logs in experiments/logs (polled every 15 s). */
+function LiveProgress() {
+  const [runs, setRuns] = useState<LiveRun[]>([])
+  useEffect(() => {
+    const poll = () => apiGet<{ runs: LiveRun[] }>('/training/live').then((r) => setRuns(r.runs)).catch(() => setRuns([]))
+    poll()
+    const t = setInterval(poll, 15000)
+    return () => clearInterval(t)
+  }, [])
+  if (!runs.length) return null
+  return (
+    <Card title="Training now" subtitle="Parsed from experiments/logs/<run>_train.log; the remaining time is an estimate from the current speed.">
+      <div className="space-y-4">{runs.map((r) => (
+        <div key={r.run}>
+          <div className="flex flex-wrap items-baseline justify-between gap-2 text-sm">
+            <span className="font-medium">{r.run}</span>
+            <span className="text-slate-500 tabular-nums">{r.phase === 'training'
+              ? <>epoch {r.epoch}/{r.epochs} · batch {r.batch}/{r.batches} · {r.iter_per_s} it/s · about {hm(r.run_eta_s)} left</>
+              : r.phase}</span>
+          </div>
+          <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full bg-orange-500 transition-all" style={{ width: `${100 * (r.progress ?? 0)}%` }} /></div>
+          {r.last_val_mAP50 != null && <div className="mt-1 text-xs text-slate-500">Validation mAP@50 after epoch {r.epochs_logged}: {pct(r.last_val_mAP50)}</div>}
+        </div>))}</div>
+    </Card>
   )
 }

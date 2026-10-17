@@ -190,3 +190,25 @@ def test_prepare_dataset_end_to_end(tmp_path):
         assert c in {"0", "1", "2", "3"}
         assert all(0.0 <= float(v) <= 1.0 for v in xywh)
     assert (out / "data.yaml").exists() and (out / "class_distribution.png").exists()
+
+
+def test_storage_guard_refuses_and_quarantine_protects(monkeypatch):
+    import pytest
+
+    from rdd_yolo import storage
+
+    g = storage.StorageGuard(reserve_gb=1e6, budget_gb=1e6)  # reserve larger than any disk
+    monkeypatch.setattr(storage, "log_event", lambda *a, **k: None)
+    with pytest.raises(storage.InsufficientSpace):
+        g.require(1, "test", dataset_bytes=False)
+    # source datasets and final results are never eligible for quarantine
+    for protected in ("dataset/raw", "models/weights", "docs"):
+        with pytest.raises(PermissionError):
+            storage.quarantine(protected, dry_run=True)
+
+
+def test_progress_line_parser():
+    from backend.app.services.training_info import _PROGRESS, _secs
+
+    m = _PROGRESS.search("       2/10      2.44G       1.82      2.052    0.01449         44        640: 9% ━── 415/4528 5.5it/s 1:16<12:29")
+    assert m and m.group(1) == "2" and m.group(5) == "4528" and _secs(m.group(9)) == 749

@@ -29,6 +29,7 @@ FIGSHARE_FILE_URL = "https://ndownloader.figshare.com/files/38030910"
 ARCHIVE_SIZE = 13264172619  # bytes, from the figshare API (article 21431547)
 DEFAULT_COUNTRIES = ["Japan", "India", "Czech", "United_States", "China_MotorBike"]
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parent))
 
 
 class HttpRangeFile(io.RawIOBase):
@@ -63,7 +64,7 @@ class HttpRangeFile(io.RawIOBase):
         # ndownloader URL is requested every time (urllib keeps the Range header).
         for attempt in range(8):
             try:
-                req = urllib.request.Request(self.url, headers={"Range": f"bytes={start}-{end}"})
+                req = urllib.request.Request(self.url, headers={"Range": f"bytes={start}-{end}", "User-Agent": "Mozilla/5.0 (RDD-YOLO dataset tools)"})
                 with urllib.request.urlopen(req, timeout=120) as r:
                     if r.status != 206:
                         raise IOError(f"Server did not honour Range request (HTTP {r.status})")
@@ -161,6 +162,9 @@ def main() -> None:
         if marker.exists():
             print(f"[{country}] already extracted, skipping")
             continue
+        from rdd_yolo.storage import guard, log_event  # imported lazily: HttpRangeFile is reused by other scripts
+        have = zpath.stat().st_size if zpath.exists() else 0
+        guard.require(2 * info.file_size - have, f"RDD2022 {country} (zip + extraction)")
         print(f"[{country}] downloading {info.file_size / 1e6:.1f} MB")
         download_member(remote, info, zpath)
         print(f"[{country}] extracting")
@@ -183,6 +187,7 @@ def main() -> None:
         marker.write_text(f"{len(names)} files extracted from {zpath.name}\n")
         if not args.keep_zips:
             zpath.unlink()
+        log_event("download", dataset=f"RDD2022/{country}", files=len(names))
         print(f"[{country}] done ({len(names)} files)")
     print(f"All done. Data in {args.out / 'RDD2022'}")
 

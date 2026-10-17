@@ -1,0 +1,1 @@
+Aborted attempt: optimizer=auto chose AdamW lr=0.00125 + 3 warmup epochs; val mAP50 0.498 (ep1), 0.508 (ep2) vs E 0.614. Stopped 2026-10-18 and restarted with MuSGD lr0=0.001. Weights deleted (not a result).

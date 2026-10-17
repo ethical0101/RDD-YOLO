@@ -1,0 +1,483 @@
+{
+  "generated_utc": "2026-10-17T20:52:09+00:00",
+  "generator": "scripts/build_dataset_docs.py",
+  "canonical_classes": {
+    "D00": "Longitudinal Crack",
+    "D10": "Transverse Crack",
+    "D20": "Alligator Crack",
+    "D40": "Pothole"
+  },
+  "training_set": "dataset/processed/rdd2022_extended_v3",
+  "datasets": [
+    {
+      "id": "rdd2022",
+      "name": "RDD2022 (Crowdsensing-based Road Damage Detection Challenge 2022)",
+      "source_url": "https://figshare.com/articles/dataset/RDD2022_-_The_multi-national_Road_Damage_Dataset_released_through_CRDDC_2022/21431547",
+      "license": "CC BY 4.0",
+      "attribution": "Arya D., Maeda H., Ghosh S.K., Toshniwal D., Sekimoto Y.",
+      "publication": "RDD2022: A multi-national image dataset for automatic road damage detection, Geoscience Data Journal, 2024",
+      "original_format": "Pascal VOC XML",
+      "original_classes": "D00, D10, D20, D40 (+ D01, D11, D43, D44, D50, Repair, D0w0)",
+      "mapping": "D00/D10/D20/D40 kept; all other labels dropped (image kept)",
+      "used_in": "A-F (5 countries); C-F (+Norway, China_Drone)",
+      "limitations": "Official test split has no public labels; consecutive dash-cam frames cause near-duplicates; Norway images 3650 px wide (downscaled to 1280)",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/RDD2022/Japan",
+          "exists": true,
+          "files": 21013,
+          "images": 10506,
+          "annotation_files": 10506,
+          "bytes": 859794801
+        },
+        {
+          "path": "dataset/raw/RDD2022/India",
+          "exists": true,
+          "files": 15413,
+          "images": 7706,
+          "annotation_files": 7706,
+          "bytes": 522941878
+        },
+        {
+          "path": "dataset/raw/RDD2022/Czech",
+          "exists": true,
+          "files": 5659,
+          "images": 2829,
+          "annotation_files": 2829,
+          "bytes": 205844636
+        },
+        {
+          "path": "dataset/raw/RDD2022/United_States",
+          "exists": true,
+          "files": 9611,
+          "images": 4805,
+          "annotation_files": 4805,
+          "bytes": 361848667
+        },
+        {
+          "path": "dataset/raw/RDD2022/China_MotorBike",
+          "exists": true,
+          "files": 3955,
+          "images": 1977,
+          "annotation_files": 1977,
+          "bytes": 154458675
+        },
+        {
+          "path": "dataset/raw/RDD2022/Norway",
+          "exists": true,
+          "files": 16323,
+          "images": 8161,
+          "annotation_files": 8161,
+          "bytes": 8820718611
+        },
+        {
+          "path": "dataset/raw/RDD2022/China_Drone",
+          "exists": true,
+          "files": 4803,
+          "images": 2401,
+          "annotation_files": 2401,
+          "bytes": 169548120
+        }
+      ],
+      "local_images": 38385,
+      "local_bytes": 11095155388,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test": 2023,
+        "test_clean": 1804,
+        "test_rdd_new": 532,
+        "train": 20408,
+        "val": 2548
+      }
+    },
+    {
+      "id": "egypt_rdd",
+      "name": "RDD (Egypt) - Roboflow rdd-6706t v8",
+      "source_url": "https://huggingface.co/datasets/Hanno100/RoadDamageDetection-Egypt",
+      "license": "CC BY 4.0 (Roboflow export) / Apache-2.0 (HF card)",
+      "attribution": "Roboflow Universe workspace road-damage-detection-wgjj4",
+      "publication": "Roboflow Universe dataset, exported 2024-04-16",
+      "original_format": "YOLOv8 TXT",
+      "original_classes": "Crack, Pothole",
+      "mapping": "Pothole -> D40; images with generic 'Crack' skipped (cannot map to D00/D10/D20)",
+      "used_in": "C-F",
+      "limitations": "Generic crack label; 70 % of images skipped",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/egypt_rdd",
+          "exists": true,
+          "files": 7132,
+          "images": 3563,
+          "annotation_files": 3565,
+          "bytes": 407186254
+        }
+      ],
+      "local_images": 3563,
+      "local_bytes": 407186254,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_external": 121,
+        "train": 962,
+        "val": 127
+      }
+    },
+    {
+      "id": "potholes_rf",
+      "name": "Potholes Detection - Roboflow potholes-detection-d4rma v1",
+      "source_url": "https://huggingface.co/datasets/Ryukijano/Pothole-detection-Yolov8",
+      "license": "CC BY 4.0",
+      "attribution": "Roboflow Universe workspace project-ssayl",
+      "publication": "Roboflow Universe, 2023",
+      "original_format": "YOLOv8 TXT",
+      "original_classes": "pothole",
+      "mapping": "pothole -> D40",
+      "used_in": "C-F",
+      "limitations": "Only 300 images mirrored on Hugging Face; 640x640 stretched",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/potholes_rf",
+          "exists": true,
+          "files": 602,
+          "images": 300,
+          "annotation_files": 301,
+          "bytes": 21644242
+        }
+      ],
+      "local_images": 300,
+      "local_bytes": 21644242,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_external": 100,
+        "train": 100,
+        "val": 98
+      }
+    },
+    {
+      "id": "manot_road_damage",
+      "name": "road damage - Roboflow road-damage-xvt2d",
+      "source_url": "https://huggingface.co/datasets/manot/pothole-segmentation",
+      "license": "CC BY 4.0",
+      "attribution": "Roboflow Universe workspace abdulmohsen-fahad-f7pdw",
+      "publication": "Roboflow Universe, 2023",
+      "original_format": "COCO JSON (boxes + polygons)",
+      "original_classes": "potholes, pothole",
+      "mapping": "pothole(s) -> D40",
+      "used_in": "D-F",
+      "limitations": "Many near-duplicates of other pothole sets (removed by dHash)",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/manot_road_damage",
+          "exists": true,
+          "files": 829,
+          "images": 819,
+          "annotation_files": 4,
+          "bytes": 111667254
+        }
+      ],
+      "local_images": 819,
+      "local_bytes": 111667254,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_closeup": 73,
+        "train": 192,
+        "val": 8
+      }
+    },
+    {
+      "id": "manot_pothole2",
+      "name": "pothole-detection - Roboflow pothole-detection-gilij",
+      "source_url": "https://huggingface.co/datasets/manot/pothole-segmentation2",
+      "license": "CC BY 4.0",
+      "attribution": "Roboflow Universe workspace gurgen-hovsepyan-mbrnv",
+      "publication": "Roboflow Universe, 2023",
+      "original_format": "COCO JSON",
+      "original_classes": "pothole",
+      "mapping": "pothole -> D40",
+      "used_in": "D-F",
+      "limitations": "Close-up photos",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/manot_pothole2",
+          "exists": true,
+          "files": 874,
+          "images": 864,
+          "annotation_files": 4,
+          "bytes": 141296036
+        }
+      ],
+      "local_images": 864,
+      "local_bytes": 141296036,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_closeup": 64,
+        "train": 426,
+        "val": 121
+      }
+    },
+    {
+      "id": "keremberke_pothole",
+      "name": "Pothole Detection - Roboflow pothole-detection-irkz9",
+      "source_url": "https://huggingface.co/datasets/keremberke/pothole-segmentation",
+      "license": "CC BY 4.0",
+      "attribution": "Roboflow Universe workspace imacs-pothole-detection-wo8mu",
+      "publication": "Roboflow Universe, 2023",
+      "original_format": "COCO JSON",
+      "original_classes": "pothole",
+      "mapping": "pothole -> D40",
+      "used_in": "D-F",
+      "limitations": "90 images; mostly duplicates of other sets",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/keremberke_pothole",
+          "exists": true,
+          "files": 100,
+          "images": 90,
+          "annotation_files": 4,
+          "bytes": 13943326
+        }
+      ],
+      "local_images": 90,
+      "local_bytes": 13943326,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_closeup": 5
+      }
+    },
+    {
+      "id": "rupesh_pothole2",
+      "name": "pothole_dataset_2 (YOLO)",
+      "source_url": "https://huggingface.co/datasets/rupesh002/pothole_dataset_2",
+      "license": "MIT",
+      "attribution": "rupesh002 (Hugging Face)",
+      "publication": "Hugging Face dataset",
+      "original_format": "YOLO TXT",
+      "original_classes": "pothole",
+      "mapping": "pothole -> D40",
+      "used_in": "D-F",
+      "limitations": "Almost entirely duplicates of other pothole sets",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/rupesh_pothole2",
+          "exists": true,
+          "files": 1333,
+          "images": 665,
+          "annotation_files": 665,
+          "bytes": 701019724
+        }
+      ],
+      "local_images": 665,
+      "local_bytes": 701019724,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "train": 5
+      }
+    },
+    {
+      "id": "rupesh_pothole",
+      "name": "pothole-detection-dataset (Roboflow pothole v1 export)",
+      "source_url": "https://huggingface.co/datasets/rupesh002/pothole-detection-dataset",
+      "license": "MIT",
+      "attribution": "rupesh002 (Hugging Face)",
+      "publication": "Hugging Face dataset",
+      "original_format": "YOLOv4-PyTorch TXT",
+      "original_classes": "pothole",
+      "mapping": "pothole -> D40",
+      "used_in": "D-F",
+      "limitations": "Partial duplicates",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/rupesh_pothole",
+          "exists": true,
+          "files": 1433,
+          "images": 715,
+          "annotation_files": 715,
+          "bytes": 113382238
+        }
+      ],
+      "local_images": 715,
+      "local_bytes": 113382238,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "train": 425,
+        "val": 118
+      }
+    },
+    {
+      "id": "mwpd",
+      "name": "MWPD - Multi-Weather Pothole Dataset",
+      "source_url": "https://huggingface.co/datasets/sumadixSk/pothole-dataset",
+      "license": "Apache-2.0",
+      "attribution": "sumadixSk (Hugging Face)",
+      "publication": "Hugging Face dataset",
+      "original_format": "YOLO TXT",
+      "original_classes": "Potholes",
+      "mapping": "Potholes -> D40",
+      "used_in": "D-F",
+      "limitations": "Weather augmentations create near-duplicates (removed by dHash)",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/mwpd",
+          "exists": true,
+          "files": 6284,
+          "images": 3139,
+          "annotation_files": 3139,
+          "bytes": 690067667
+        }
+      ],
+      "local_images": 3139,
+      "local_bytes": 690067667,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_closeup": 93,
+        "train": 2048,
+        "val": 180
+      }
+    },
+    {
+      "id": "deeksha_pavement",
+      "name": "Pavement Distress Detection aggregate (SVRDD, HighRPD, RD0, 'archive', Potholes, Attain sources)",
+      "source_url": "https://huggingface.co/datasets/Deeksha9/pavement-distress-detection",
+      "license": "MIT",
+      "attribution": "Deeksha9 / DeekshithaKalluri; original sources include SVRDD and HighRPD (Mendeley, CC BY 4.0, doi:10.17632/sywswj7djj.1)",
+      "publication": "Hugging Face dataset (aggregate of public datasets)",
+      "original_format": "YOLO TXT",
+      "original_classes": "Longitudinal Crack, Transverse Crack, Alligator Crack, Pothole, Patch, Block Crack",
+      "mapping": "first four -> D00/D10/D20/D40; Patch boxes dropped; images with Block Crack skipped; embedded RDD2022 and older Japanese RDD not used (test overlap)",
+      "used_in": "E-F",
+      "limitations": "Class mapping done by the aggregator; 'archive' source undocumented",
+      "status": "used",
+      "local": [
+        {
+          "path": "dataset/raw/external/deeksha",
+          "exists": true,
+          "files": 70448,
+          "images": 35223,
+          "annotation_files": 35223,
+          "bytes": 5867670937
+        }
+      ],
+      "local_images": 35223,
+      "local_bytes": 5867670937,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_pavement": 1803,
+        "train": 11657,
+        "val": 1301
+      }
+    },
+    {
+      "id": "nrdd2024",
+      "name": "N-RDD2024: Road damage and defects (refined RDD2022 annotations)",
+      "source_url": "https://data.mendeley.com/datasets/27c8pwsd6v/3",
+      "license": "CC BY 4.0",
+      "attribution": "Kaya O., Codur M.Y.",
+      "publication": "Mendeley Data, v3, 2024, doi:10.17632/27c8pwsd6v.3",
+      "original_format": "Pascal VOC / COCO / YOLO (Roboflow export, 640x640)",
+      "original_classes": "D00, D10, D20, D30, D40, D50, D60, D70, D80, D90",
+      "mapping": "annotations only (images are RDD2022); compared on D00/D10/D20/D40: box F1 98.2 %, class agreement 99.9 % (docs/diagnostics/LABEL_AGREEMENT.md), so no corrected labels to train with",
+      "used_in": "label-agreement analysis only (not training)",
+      "limitations": "Own train/valid split overlaps our test images; resized 640x640",
+      "status": "downloaded (annotations only)",
+      "local": [
+        {
+          "path": "dataset/raw/external/nrdd2024",
+          "exists": true,
+          "files": 19002,
+          "images": 0,
+          "annotation_files": 18996,
+          "bytes": 20751881
+        }
+      ],
+      "local_images": 0,
+      "local_bytes": 20751881,
+      "downloaded": true,
+      "images_in_training_set_v3": {}
+    },
+    {
+      "id": "rome_rdd",
+      "name": "Road Damage Dataset: Potholes, Cracks and Manholes (Rome, Italy)",
+      "source_url": "https://zenodo.org/records/18528034",
+      "license": "CC BY 4.0",
+      "attribution": "Giordani E., Arcioni L., Gil-Martin M., Marini M.R.",
+      "publication": "Zenodo 2026, doi:10.5281/zenodo.18528034; Scientific Reports, doi:10.1038/s41598-026-46679-4",
+      "original_format": "YOLO TXT",
+      "original_classes": "Pothole, Crack, Manhole",
+      "mapping": "Pothole -> D40; images with generic Crack excluded; Manhole boxes dropped (manhole-only images kept as negatives)",
+      "used_in": "held-out test only (test_rome, 634 images)",
+      "limitations": "Generic crack class (1,375 of 2,009 images excluded); 640x360; one city, Feb-Mar 2025",
+      "status": "used (test only)",
+      "local": [
+        {
+          "path": "dataset/raw/external/rome_rdd",
+          "exists": true,
+          "files": 6033,
+          "images": 2009,
+          "annotation_files": 4020,
+          "bytes": 194786967
+        }
+      ],
+      "local_images": 2009,
+      "local_bytes": 194786967,
+      "downloaded": true,
+      "images_in_training_set_v3": {
+        "test_rome": 634
+      }
+    }
+  ],
+  "excluded": [
+    {
+      "name": "IRRDD (Iran Road Damage Dataset)",
+      "source_url": "https://github.com/IranRoadDamageDataset/IRRDD",
+      "reason": "No license stated (25,000 images, YOLO, D00/D10/D20/D40)"
+    },
+    {
+      "name": "UAPD (UAV Asphalt Pavement Distress)",
+      "source_url": "https://github.com/tantantetetao/UAPD-Pavement-Distress-Dataset",
+      "reason": "No license stated; UAV top-down view"
+    },
+    {
+      "name": "PaveTrack",
+      "source_url": "https://www.scidb.cn/en/detail?dataSetId=e9ffbca43e6e4a5ebdd25663d0de9ad1",
+      "reason": "CC BY-NC terms, generic 'crack' class incompatible with D00/D10, 46k images exceed the storage budget"
+    },
+    {
+      "name": "SUT-Crack",
+      "source_url": "https://data.mendeley.com/datasets/gsbmknrhkv/6",
+      "reason": "130 images, generic crack class only"
+    },
+    {
+      "name": "Outerview Global Potholes",
+      "source_url": "https://huggingface.co/datasets/Outerview/global-potholes-dataset",
+      "reason": "Image-level labels only, no boxes"
+    },
+    {
+      "name": "miia-pothole",
+      "source_url": "https://huggingface.co/datasets/mabughali/miia-pothole-train",
+      "reason": "Classification labels only"
+    },
+    {
+      "name": "RDD2020 / GRDDC'2020 copies",
+      "source_url": "https://github.com/sekilab/RoadDamageDetector",
+      "reason": "Contained in RDD2022 (duplicates, test leakage)"
+    },
+    {
+      "name": "Crack500, CFD, GAPs, Pothole-600, CrackTree260 and other segmentation sets",
+      "source_url": "https://github.com/large-road-damage-datalake",
+      "reason": "Pixel masks without crack type; no boxes would be honest for D00/D10 (GAPs also requires registration)"
+    },
+    {
+      "name": "Unlicensed Hugging Face uploads (RyzenPuppy, VarunVV, robiulhasanjisan88, hf-vision, adhisetiawan)",
+      "source_url": "https://huggingface.co/datasets",
+      "reason": "No license stated"
+    }
+  ]
+}

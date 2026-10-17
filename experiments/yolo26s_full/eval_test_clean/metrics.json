@@ -1,0 +1,76 @@
+{
+  "weights": "experiments\\yolo26s_full\\weights\\best.pt",
+  "split": "test",
+  "tag": "test_clean",
+  "dataset": "dataset\\processed\\rdd2022_extended_v3\\data_test_clean.yaml",
+  "images": 1804,
+  "imgsz": 640,
+  "ultralytics_version": "8.4.174",
+  "evaluated_utc": "2026-10-17T20:22:28.096440+00:00",
+  "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "overall": {
+    "precision": 0.6321620996941213,
+    "recall": 0.5720028634873535,
+    "f1": 0.600579724986933,
+    "mAP50": 0.6177847057635553,
+    "mAP50_95": 0.3163288246290289
+  },
+  "per_class": {
+    "D00": {
+      "name": "Longitudinal Crack",
+      "precision": 0.6324369358924247,
+      "recall": 0.6487174313728561,
+      "f1": 0.6404737399962368,
+      "mAP50": 0.6844857605140424,
+      "mAP50_95": 0.39242368685088824,
+      "instances": 1358
+    },
+    "D10": {
+      "name": "Transverse Crack",
+      "precision": 0.5927423667821707,
+      "recall": 0.5815850815850816,
+      "f1": 0.5871107214997742,
+      "mAP50": 0.6120963578374415,
+      "mAP50_95": 0.29210566569065,
+      "instances": 858
+    },
+    "D20": {
+      "name": "Alligator Crack",
+      "precision": 0.6757374036155682,
+      "recall": 0.5927179176521583,
+      "f1": 0.6315108778926546,
+      "mAP50": 0.6519071009529801,
+      "mAP50_95": 0.3505203538208224,
+      "instances": 886
+    },
+    "D40": {
+      "name": "Pothole",
+      "precision": 0.6277316924863214,
+      "recall": 0.4649910233393178,
+      "f1": 0.5342427641420279,
+      "mAP50": 0.5226496037497568,
+      "mAP50_95": 0.23026559215375478,
+      "instances": 557
+    }
+  },
+  "parameters": 9950960,
+  "gflops": 22.75,
+  "model_size_mb": 19.37,
+  "ultralytics_val_speed_ms": {
+    "preprocess": 1.198,
+    "inference": 10.268,
+    "loss": 0.001,
+    "postprocess": 0.957
+  },
+  "speed_benchmark": {
+    "images": 20,
+    "batch": 1,
+    "imgsz": 640,
+    "device": "0",
+    "end_to_end_ms_mean": 14.15,
+    "end_to_end_ms_median": 13.73,
+    "inference_ms_mean": 10.68,
+    "fps_end_to_end": 70.7,
+    "fps_inference_only": 93.7
+  }
+}

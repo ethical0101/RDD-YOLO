@@ -202,3 +202,29 @@ def test_modern_formats_avif_heic(client, sample_image, fmt, mime):
     assert client.get(body["image_url"]).status_code == 200  # stored as JPEG, viewable in any browser
     if fmt == "HEIF":
         assert body["location"]["source"] == "exif" and body["location"]["lat"] == pytest.approx(12.95, abs=1e-4)
+
+
+def test_export_geojson_and_csv(client, sample_image):
+    r = client.post("/api/inference/image", files=[_upload(sample_image)],
+                    data={"latitude": "12.97", "longitude": "79.16", "location_source": "manual", "conf": "0.05"})
+    assert r.status_code == 200, r.text
+    g = client.get("/api/export/detections", params={"format": "geojson"})
+    assert g.status_code == 200 and g.headers["content-type"].startswith("application/geo+json")
+    body = g.json()
+    assert body["type"] == "FeatureCollection" and "not the measured position" in body["metadata"]["location_note"]
+    for f in body["features"]:
+        lon, lat = f["geometry"]["coordinates"]  # RFC 7946 order
+        assert (lat, lon) == (f["properties"]["latitude"], f["properties"]["longitude"])
+    c = client.get("/api/export/detections", params={"format": "csv"})
+    assert c.status_code == 200 and c.text.startswith("# Coordinates are where")
+    assert "attachment" in c.headers["content-disposition"]
+    assert client.get("/api/export/detections", params={"format": "xml"}).status_code == 422
+
+
+def test_training_live_datasets_storage(client):
+    live = client.get("/api/training/live").json()
+    assert isinstance(live["runs"], list)
+    cat = client.get("/api/datasets/catalog").json()
+    assert "available" in cat
+    if cat["available"]:
+        assert all("license" in d and "images_in_training_set_v3" in d for d in cat["datasets"])

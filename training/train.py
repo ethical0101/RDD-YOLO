@@ -132,6 +132,12 @@ def main() -> None:
     ap.add_argument("--init-weights", type=Path, default=None,
                     help="Fine-tune: start from this trained checkpoint instead of the COCO-backbone init")
     ap.add_argument("--close-mosaic", type=int, default=10)
+    ap.add_argument("--optimizer", default="auto",
+                    help="Ultralytics optimizer; 'auto' ignores --lr0 and picks one by run length (fine-tunes should "
+                         "name the optimizer of the run they continue, e.g. MuSGD)")
+    ap.add_argument("--lr0", type=float, default=0.01)
+    ap.add_argument("--lrf", type=float, default=0.01, help="Final LR as a fraction of lr0")
+    ap.add_argument("--warmup-epochs", type=float, default=3.0)
     ap.add_argument("--title", default=None, help="Human-readable experiment title stored in run_info.json")
     ap.add_argument("--init-all-layers", action="store_true",
                     help="Transfer every shape-compatible COCO layer (backbone+neck+head), not only the backbone")
@@ -196,7 +202,8 @@ def main() -> None:
         amp=rec.amp, patience=args.patience, fraction=args.fraction, seed=args.seed, deterministic=not args.non_deterministic,
         project=str(EXPERIMENTS_DIR), name=name, exist_ok=True, cache=args.cache, plots=True, val=True,
         pretrained=True,  # use the weights of the init checkpoint (COCO backbone + seeded random rest)
-        optimizer="auto", cos_lr=False, close_mosaic=args.close_mosaic,
+        optimizer=args.optimizer, lr0=args.lr0, lrf=args.lrf, warmup_epochs=args.warmup_epochs,
+        cos_lr=False, close_mosaic=args.close_mosaic,
     )
     finalize(run_dir, time.time() - t0)
 

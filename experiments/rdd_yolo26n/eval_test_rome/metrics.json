@@ -1,0 +1,49 @@
+{
+  "weights": "experiments\\rdd_yolo26n\\weights\\best.pt",
+  "split": "test",
+  "tag": "test_rome",
+  "dataset": "dataset\\processed\\rdd2022_extended_v3\\data_test_rome.yaml",
+  "images": 634,
+  "imgsz": 640,
+  "ultralytics_version": "8.4.174",
+  "evaluated_utc": "2026-10-17T20:52:20.489260+00:00",
+  "gpu": "CPU",
+  "overall": {
+    "precision": 0.29726720779222066,
+    "recall": 0.2676767676767677,
+    "f1": 0.2816970488164366,
+    "mAP50": 0.18598140123996557,
+    "mAP50_95": 0.0614403417109594
+  },
+  "per_class": {
+    "D40": {
+      "name": "Pothole",
+      "precision": 0.29726720779222066,
+      "recall": 0.2676767676767677,
+      "f1": 0.2816970488164366,
+      "mAP50": 0.18598140123996557,
+      "mAP50_95": 0.0614403417109594,
+      "instances": 396
+    }
+  },
+  "parameters": 2415600,
+  "gflops": 5.81,
+  "model_size_mb": 4.97,
+  "ultralytics_val_speed_ms": {
+    "preprocess": 0.397,
+    "inference": 28.08,
+    "loss": 0.0,
+    "postprocess": 0.903
+  },
+  "speed_benchmark": {
+    "images": 20,
+    "batch": 1,
+    "imgsz": 640,
+    "device": "cpu",
+    "end_to_end_ms_mean": 43.68,
+    "end_to_end_ms_median": 43.89,
+    "inference_ms_mean": 41.63,
+    "fps_end_to_end": 22.9,
+    "fps_inference_only": 24.0
+  }
+}

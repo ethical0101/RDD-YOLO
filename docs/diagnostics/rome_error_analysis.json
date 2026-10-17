@@ -1,0 +1,18 @@
+{
+  "model": "yolo26s_full_best.pt",
+  "conf": 0.25,
+  "counts": {
+    "D40 FN": 310,
+    "D40 FP: other": 14,
+    "D40 TP": 86,
+    "D40 FP: poor localisation of a pothole": 46,
+    "crack FP (D10)": 15,
+    "crack FP (D20)": 37,
+    "crack FP (D00)": 56,
+    "D40 FP on a manhole": 83
+  },
+  "median_area_pct": {
+    "tp": 0.656,
+    "fn": 0.358
+  }
+}

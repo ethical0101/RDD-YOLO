@@ -1,0 +1,277 @@
+{
+  "source": "N-RDD2024, Mendeley Data doi:10.17632/27c8pwsd6v.3 (CC BY 4.0)",
+  "nrdd_images_with_xml": 18995,
+  "iou_threshold": 0.5,
+  "classes_compared": [
+    "D00",
+    "D10",
+    "D20",
+    "D40"
+  ],
+  "splits": {
+    "train": {
+      "images_in_both": 14530,
+      "boxes_rdd2022": 35353,
+      "boxes_nrdd2024": 35661,
+      "matched_iou50": 34857,
+      "recall_of_rdd2022_boxes": 0.986,
+      "precision_vs_rdd2022": 0.9775,
+      "box_f1": 0.9817,
+      "class_agreement_of_matched": 0.9993,
+      "per_country": {
+        "China_MotorBike": {
+          "images_in_both": 1581,
+          "boxes_rdd2022": 3761,
+          "boxes_nrdd2024": 3802,
+          "matched_iou50": 3761,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 0.9892,
+          "box_f1": 0.9946,
+          "class_agreement_of_matched": 1.0
+        },
+        "Czech": {
+          "images_in_both": 795,
+          "boxes_rdd2022": 1281,
+          "boxes_nrdd2024": 1309,
+          "matched_iou50": 1274,
+          "recall_of_rdd2022_boxes": 0.9945,
+          "precision_vs_rdd2022": 0.9733,
+          "box_f1": 0.9838,
+          "class_agreement_of_matched": 0.9961
+        },
+        "India": {
+          "images_in_both": 826,
+          "boxes_rdd2022": 1717,
+          "boxes_nrdd2024": 1727,
+          "matched_iou50": 1710,
+          "recall_of_rdd2022_boxes": 0.9959,
+          "precision_vs_rdd2022": 0.9902,
+          "box_f1": 0.993,
+          "class_agreement_of_matched": 0.9994
+        },
+        "Japan": {
+          "images_in_both": 5225,
+          "boxes_rdd2022": 10895,
+          "boxes_nrdd2024": 10744,
+          "matched_iou50": 10633,
+          "recall_of_rdd2022_boxes": 0.976,
+          "precision_vs_rdd2022": 0.9897,
+          "box_f1": 0.9828,
+          "class_agreement_of_matched": 0.9992
+        },
+        "Norway": {
+          "images_in_both": 2260,
+          "boxes_rdd2022": 8892,
+          "boxes_nrdd2024": 9001,
+          "matched_iou50": 8676,
+          "recall_of_rdd2022_boxes": 0.9757,
+          "precision_vs_rdd2022": 0.9639,
+          "box_f1": 0.9698,
+          "class_agreement_of_matched": 0.9992
+        },
+        "United_States": {
+          "images_in_both": 3843,
+          "boxes_rdd2022": 8807,
+          "boxes_nrdd2024": 9078,
+          "matched_iou50": 8803,
+          "recall_of_rdd2022_boxes": 0.9995,
+          "precision_vs_rdd2022": 0.9697,
+          "box_f1": 0.9844,
+          "class_agreement_of_matched": 0.9998
+        }
+      },
+      "matched_class_pairs": {
+        "D00->D00": 17799,
+        "D00->D20": 11,
+        "D10->D00": 3,
+        "D10->D10": 7864,
+        "D10->D40": 1,
+        "D20->D00": 6,
+        "D20->D10": 2,
+        "D20->D20": 6176,
+        "D40->D40": 2995
+      }
+    },
+    "val": {
+      "images_in_both": 1771,
+      "boxes_rdd2022": 4325,
+      "boxes_nrdd2024": 4357,
+      "matched_iou50": 4260,
+      "recall_of_rdd2022_boxes": 0.985,
+      "precision_vs_rdd2022": 0.9777,
+      "box_f1": 0.9813,
+      "class_agreement_of_matched": 0.9988,
+      "per_country": {
+        "China_MotorBike": {
+          "images_in_both": 197,
+          "boxes_rdd2022": 446,
+          "boxes_nrdd2024": 452,
+          "matched_iou50": 446,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 0.9867,
+          "box_f1": 0.9933,
+          "class_agreement_of_matched": 1.0
+        },
+        "Czech": {
+          "images_in_both": 99,
+          "boxes_rdd2022": 151,
+          "boxes_nrdd2024": 158,
+          "matched_iou50": 149,
+          "recall_of_rdd2022_boxes": 0.9868,
+          "precision_vs_rdd2022": 0.943,
+          "box_f1": 0.9644,
+          "class_agreement_of_matched": 0.9933
+        },
+        "India": {
+          "images_in_both": 102,
+          "boxes_rdd2022": 241,
+          "boxes_nrdd2024": 243,
+          "matched_iou50": 240,
+          "recall_of_rdd2022_boxes": 0.9959,
+          "precision_vs_rdd2022": 0.9877,
+          "box_f1": 0.9917,
+          "class_agreement_of_matched": 0.9958
+        },
+        "Japan": {
+          "images_in_both": 624,
+          "boxes_rdd2022": 1343,
+          "boxes_nrdd2024": 1315,
+          "matched_iou50": 1298,
+          "recall_of_rdd2022_boxes": 0.9665,
+          "precision_vs_rdd2022": 0.9871,
+          "box_f1": 0.9767,
+          "class_agreement_of_matched": 0.9985
+        },
+        "Norway": {
+          "images_in_both": 269,
+          "boxes_rdd2022": 1044,
+          "boxes_nrdd2024": 1054,
+          "matched_iou50": 1027,
+          "recall_of_rdd2022_boxes": 0.9837,
+          "precision_vs_rdd2022": 0.9744,
+          "box_f1": 0.979,
+          "class_agreement_of_matched": 1.0
+        },
+        "United_States": {
+          "images_in_both": 480,
+          "boxes_rdd2022": 1100,
+          "boxes_nrdd2024": 1135,
+          "matched_iou50": 1100,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 0.9692,
+          "box_f1": 0.9843,
+          "class_agreement_of_matched": 0.9991
+        }
+      },
+      "matched_class_pairs": {
+        "D00->D00": 2185,
+        "D00->D20": 3,
+        "D10->D10": 973,
+        "D20->D00": 1,
+        "D20->D10": 1,
+        "D20->D20": 703,
+        "D40->D40": 394
+      }
+    },
+    "test": {
+      "images_in_both": 1520,
+      "boxes_rdd2022": 3326,
+      "boxes_nrdd2024": 3339,
+      "matched_iou50": 3284,
+      "recall_of_rdd2022_boxes": 0.9874,
+      "precision_vs_rdd2022": 0.9835,
+      "box_f1": 0.9854,
+      "class_agreement_of_matched": 0.9985,
+      "per_country": {
+        "China_MotorBike": {
+          "images_in_both": 199,
+          "boxes_rdd2022": 443,
+          "boxes_nrdd2024": 447,
+          "matched_iou50": 443,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 0.9911,
+          "box_f1": 0.9955,
+          "class_agreement_of_matched": 1.0
+        },
+        "Czech": {
+          "images_in_both": 98,
+          "boxes_rdd2022": 178,
+          "boxes_nrdd2024": 182,
+          "matched_iou50": 177,
+          "recall_of_rdd2022_boxes": 0.9944,
+          "precision_vs_rdd2022": 0.9725,
+          "box_f1": 0.9833,
+          "class_agreement_of_matched": 0.9944
+        },
+        "India": {
+          "images_in_both": 98,
+          "boxes_rdd2022": 203,
+          "boxes_nrdd2024": 203,
+          "matched_iou50": 203,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 1.0,
+          "box_f1": 1.0,
+          "class_agreement_of_matched": 1.0
+        },
+        "Japan": {
+          "images_in_both": 644,
+          "boxes_rdd2022": 1399,
+          "boxes_nrdd2024": 1368,
+          "matched_iou50": 1358,
+          "recall_of_rdd2022_boxes": 0.9707,
+          "precision_vs_rdd2022": 0.9927,
+          "box_f1": 0.9816,
+          "class_agreement_of_matched": 0.9978
+        },
+        "United_States": {
+          "images_in_both": 481,
+          "boxes_rdd2022": 1103,
+          "boxes_nrdd2024": 1139,
+          "matched_iou50": 1103,
+          "recall_of_rdd2022_boxes": 1.0,
+          "precision_vs_rdd2022": 0.9684,
+          "box_f1": 0.9839,
+          "class_agreement_of_matched": 0.9991
+        }
+      },
+      "matched_class_pairs": {
+        "D00->D00": 1353,
+        "D00->D20": 2,
+        "D10->D10": 826,
+        "D20->D00": 2,
+        "D20->D10": 1,
+        "D20->D20": 738,
+        "D40->D40": 362
+      }
+    },
+    "test_rdd_new": {
+      "images_in_both": 274,
+      "boxes_rdd2022": 1156,
+      "boxes_nrdd2024": 1167,
+      "matched_iou50": 1137,
+      "recall_of_rdd2022_boxes": 0.9836,
+      "precision_vs_rdd2022": 0.9743,
+      "box_f1": 0.9789,
+      "class_agreement_of_matched": 1.0,
+      "per_country": {
+        "Norway": {
+          "images_in_both": 274,
+          "boxes_rdd2022": 1156,
+          "boxes_nrdd2024": 1167,
+          "matched_iou50": 1137,
+          "recall_of_rdd2022_boxes": 0.9836,
+          "precision_vs_rdd2022": 0.9743,
+          "box_f1": 0.9789,
+          "class_agreement_of_matched": 1.0
+        }
+      },
+      "matched_class_pairs": {
+        "D00->D00": 848,
+        "D10->D10": 188,
+        "D20->D20": 45,
+        "D40->D40": 56
+      }
+    }
+  },
+  "note": "1520 of our RDD2022 test images are in N-RDD2024's own train/valid split; N-RDD2024 labels must not be used to train a model evaluated on our test split without excluding them."
+}

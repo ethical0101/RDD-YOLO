@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
-  Activity, BarChart3, Brain, Camera, FlaskConical, History, LayoutDashboard, Map, Menu, ScanSearch, Video, X,
+  Activity, BarChart3, Brain, Camera, Database, FlaskConical, HardDrive, History, LayoutDashboard, Map, Menu, ScanSearch,
+  Settings, Video, X,
 } from 'lucide-react'
 import { apiGet } from '../lib/api'
 import { STATIC } from '../lib/staticMode'
@@ -18,6 +19,9 @@ const NAV = [
   { to: '/history', label: 'Detection History', icon: History },
   { to: '/model', label: 'Model', icon: Brain },
   { to: '/training', label: 'Training & Experiments', icon: FlaskConical },
+  { to: '/datasets', label: 'Datasets', icon: Database },
+  { to: '/storage', label: 'Storage', icon: HardDrive },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function Layout() {

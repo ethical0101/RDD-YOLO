@@ -320,9 +320,10 @@ export async function staticRequest(method: string, path: string, body?: FormDat
       const s = await snapshot('model')
       return { ...s, info: { ...s.info, device: backend === 'not loaded' ? 'browser' : backend } }
     }
-    if (p === '/classes' || p === '/severity/rules' || p === '/dataset/stats' || p === '/training/comparison' || p === '/training/experiments')
+    if (p === '/classes' || p === '/severity/rules' || p === '/dataset/stats' || p === '/training/comparison' || p === '/training/experiments' || p === '/datasets/catalog')
       return snapshot(p.slice(1).replace(/\//g, '_'))
     if ((m = p.match(/^\/training\/experiments\/([\w-]+)$/))) return snapshot(`training_experiment_${m[1]}`)
+    if (p === '/training/live') return { runs: [] }
     if (p === '/system/hardware') return { hardware: { gpu_name: `Your browser (${backend})`, vram_gb: null, cpu_cores: navigator.hardwareConcurrency, ram_gb: null, torch_version: 'onnxruntime-web 1.30' } }
     if (p === '/stats') return stats(d, +(q.get('days') ?? 30))
     if (p === '/detections') {

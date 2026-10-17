@@ -369,3 +369,77 @@ def dataset_stats():
     if s is None:
         return {"available": False, "message": "Dataset not prepared yet (run dataset/prepare_dataset.py)"}
     return {"available": True, **s}
+
+
+@router.get("/training/live")
+def training_live():
+    """Progress of runs currently writing to experiments/logs (parsed from the real console logs)."""
+    return {"runs": training_info.live_progress()}
+
+
+@router.get("/datasets/catalog")
+def datasets_catalog():
+    c = training_info.dataset_catalog()
+    if c is None:
+        return {"available": False, "message": "Run scripts/build_dataset_docs.py to generate the dataset manifest"}
+    return {"available": True, **c}
+
+
+_storage_cache: dict = {}
+
+
+@router.get("/storage/report")
+def storage_report(refresh: bool = False):
+    """Live disk usage and the storage inventory (cached for 2 minutes: scanning dataset/ takes a few seconds)."""
+    import time
+
+    from rdd_yolo import storage as rs
+
+    if refresh or not _storage_cache or time.time() - _storage_cache["t"] > 120:
+        _storage_cache.update(t=time.time(), data=rs.report())
+    return _storage_cache["data"]
+
+
+GPS_NOTE = ("Coordinates are where the photo or video frame was taken (browser GPS, EXIF, manual pin or route "
+            "interpolation), not the measured position of the damage itself; expect an offset of a few to tens of metres.")
+
+
+@router.get("/export/detections")
+def export_detections(
+    db: DB,
+    format: str = Query("geojson", pattern="^(geojson|csv)$"),
+    classes: str | None = None,
+    min_conf: float | None = Query(None, ge=0, le=1),
+    severity: str | None = None,
+    source: str | None = None,
+    kind: str | None = None,
+    geolocated_only: bool = True,
+    limit: int = Query(20000, ge=1, le=100000),
+):
+    """Download stored detections as GeoJSON (RFC 7946, lon/lat) or CSV."""
+    import csv
+    import io
+    import json
+
+    from fastapi.responses import Response
+
+    q = filtered_query(_split(classes), min_conf, _split(severity), _split(source), geolocated_only or None, None, kind or None)
+    rows = [detection_to_dict(d) for d in db.scalars(q.order_by(Detection.created_at.desc()).limit(limit))]
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    if format == "csv":
+        cols = ["id", "created_at", "class_code", "class_name", "confidence", "severity", "severity_score", "latitude",
+                "longitude", "location_source", "kind", "inference_id", "video_time_s", "model_version"]
+        buf = io.StringIO()
+        buf.write(f"# {GPS_NOTE}\n")
+        w = csv.DictWriter(buf, fieldnames=cols, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+        return Response(buf.getvalue(), media_type="text/csv",
+                        headers={"Content-Disposition": f'attachment; filename="rdd_yolo_detections_{stamp}.csv"'})
+    feats = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [r["longitude"], r["latitude"]]}
+              if r.get("latitude") is not None else None, "properties": r} for r in rows]
+    body = {"type": "FeatureCollection", "features": feats,
+            "metadata": {"generator": f"RDD-YOLO {rdd_yolo.__version__}", "exported_utc": stamp, "count": len(feats),
+                         "location_note": GPS_NOTE}}
+    return Response(json.dumps(body, default=str), media_type="application/geo+json",
+                    headers={"Content-Disposition": f'attachment; filename="rdd_yolo_detections_{stamp}.geojson"'})

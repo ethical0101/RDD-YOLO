@@ -22,6 +22,9 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parent))
+from rdd_yolo.storage import InsufficientSpace, guard, log_event  # noqa: E402
+
 OUT = ROOT / "raw" / "external"
 HF = "https://huggingface.co"
 
@@ -49,11 +52,17 @@ def get(url: str, dest: Path, retries: int = 6) -> None:
     for k in range(retries):
         try:
             tmp = dest.with_suffix(dest.suffix + ".part")
-            with urllib.request.urlopen(url, timeout=120) as r, open(tmp, "wb") as fh:
-                while chunk := r.read(1 << 20):
-                    fh.write(chunk)
+            with urllib.request.urlopen(url, timeout=120) as r:
+                n = int(r.headers.get("Content-Length") or 0)
+                guard.require(n * (2 if dest.suffix == ".zip" else 1), dest.name)  # zips are also extracted
+                fh = open(tmp, "wb")
+                with fh:
+                    while chunk := r.read(1 << 20):
+                        fh.write(chunk)
             tmp.replace(dest)
             return
+        except InsufficientSpace:
+            raise
         except Exception as exc:
             print(f"  retry {k + 1}: {exc}", file=sys.stderr)
             time.sleep(2 ** k)
@@ -83,6 +92,7 @@ def main() -> None:
                 with zipfile.ZipFile(z) as zf:
                     zf.extractall(dst / z.stem if z.parent.name == "data" else dst)
                 marker.write_text("ok")
+        log_event("download", dataset=name, files=len(files))
         print(f"[{name}] {len(files)} files -> {dst}")
 
 

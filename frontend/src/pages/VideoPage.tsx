@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Film, Route as RouteIcon, Upload } from 'lucide-react'
 import { apiGet, apiSend, useApi } from '../lib/api'
+import { loadSettings } from '../lib/settings'
 import { STATIC } from '../lib/staticMode'
 import { CLASS_CODES, CLASS_COLORS, dateTime, pct } from '../lib/format'
 import type { Inference } from '../lib/types'
@@ -10,7 +11,7 @@ import { Button, Card, ClassBadge, EmptyState, ErrorState, Field, PageHeader, Se
 export default function VideoPage() {
   const [file, setFile] = useState<File | null>(null)
   const [route, setRoute] = useState<File | null>(null)
-  const [conf, setConf] = useState(0.25)
+  const [conf, setConf] = useState(() => loadSettings().defaultConf)
   const [stride, setStride] = useState(3)
   const [locMode, setLocMode] = useState<'none' | 'route' | 'fixed'>('none')
   const [loc, setLoc] = useState<PickedLocation>(NO_LOCATION)

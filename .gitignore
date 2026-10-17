@@ -53,3 +53,6 @@ experiments/disk_monitor.log
 
 # Generated deployment bundle
 deploy/
+
+# reversible storage quarantine (scripts/storage_report.py)
+_quarantine/

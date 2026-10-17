@@ -12,6 +12,9 @@ import Analytics from './pages/Analytics'
 import History from './pages/History'
 import ModelPage from './pages/ModelPage'
 import Training from './pages/Training'
+import Datasets from './pages/Datasets'
+import Storage from './pages/Storage'
+import Settings from './pages/Settings'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -27,6 +30,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="history" element={<History />} />
           <Route path="model" element={<ModelPage />} />
           <Route path="training" element={<Training />} />
+          <Route path="datasets" element={<Datasets />} />
+          <Route path="storage" element={<Storage />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Dashboard />} />
         </Route>
       </Routes>

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Download, MapPinned, Trash2 } from 'lucide-react'
-import { apiGet, apiSend, useApi } from '../lib/api'
+import { apiSend, useApi } from '../lib/api'
+import { exportDetections } from '../lib/exporting'
 import { CLASS_CODES, CLASS_NAMES, SEVERITIES, coord, dateTime, pct } from '../lib/format'
 import type { StoredDetection } from '../lib/types'
 import { Button, Card, ClassBadge, EmptyState, ErrorState, PageHeader, SeverityBadge, SourceBadge, Spinner, inputCls } from '../components/ui'
@@ -24,15 +25,9 @@ export default function History() {
     reload()
   }
 
-  const exportCsv = async () => {
-    const rows: StoredDetection[] = (await apiGet<{ items: StoredDetection[] }>('/detections', { ...params, limit: 1000, offset: 0 })).items
-    const head = ['id', 'created_at', 'class_code', 'class_name', 'confidence', 'severity', 'severity_score', 'latitude', 'longitude', 'location_source', 'kind', 'video_time_s', 'model_version']
-    const csv = [head.join(','), ...rows.map((r) => head.map((h) => JSON.stringify((r as any)[h] ?? '')).join(','))].join('\n')
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
-    a.download = 'rdd_yolo_detections.csv'
-    a.click()
-  }
+  const filters = { classes: cls, severity: sev, kind, min_conf: minConf }
+  const [exportErr, setExportErr] = useState<string | null>(null)
+  const doExport = (f: 'csv' | 'geojson') => exportDetections(f, filters, false).then(() => setExportErr(null)).catch((e) => setExportErr(e.message))
 
   const pages = data ? Math.max(1, Math.ceil(data.total / PAGE)) : 1
   const reset = (fn: (v: string) => void) => (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => { fn(e.target.value); setPage(0) }
@@ -40,7 +35,11 @@ export default function History() {
   return (
     <>
       <PageHeader title="Detection History" subtitle="Every stored detection, newest first."
-        actions={<Button variant="secondary" onClick={exportCsv} disabled={!data?.total}><Download className="h-4 w-4" /> Export CSV</Button>} />
+        actions={<div className="flex gap-2">
+          <Button variant="secondary" onClick={() => doExport('csv')} disabled={!data?.total}><Download className="h-4 w-4" /> CSV</Button>
+          <Button variant="secondary" onClick={() => doExport('geojson')} disabled={!data?.total}><Download className="h-4 w-4" /> GeoJSON</Button>
+        </div>} />
+      {exportErr && <div className="mb-4"><ErrorState message={exportErr} /></div>}
       <div className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-5">
         <select className={inputCls} value={cls} onChange={reset(setCls)}><option value="">All classes</option>{CLASS_CODES.map((c) => <option key={c} value={c}>{c} {CLASS_NAMES[c]}</option>)}</select>
         <select className={inputCls} value={sev} onChange={reset(setSev)}><option value="">All severities</option>{SEVERITIES.map((s) => <option key={s}>{s}</option>)}</select>

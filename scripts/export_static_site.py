@@ -84,7 +84,7 @@ def snapshot_api() -> None:
         model["info"]["device"] = "browser"
         put("model", model)
         for path, name in (("/api/classes", "classes"), ("/api/severity/rules", "severity_rules"),
-                           ("/api/dataset/stats", "dataset_stats"), ("/api/training/comparison", "training_comparison")):
+                           ("/api/dataset/stats", "dataset_stats"), ("/api/datasets/catalog", "datasets_catalog"), ("/api/training/comparison", "training_comparison")):
             put(name, c.get(path).json())
         exps = [e for e in c.get("/api/training/experiments").json() if not e["name"].startswith("smoke")]
         put("training_experiments", exps)

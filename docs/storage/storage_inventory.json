@@ -1,0 +1,260 @@
+{
+  "generated_utc": "2026-10-17T20:14:33+00:00",
+  "project": "E:\\RDD-YOLO",
+  "drive": {
+    "total_gb": 100.5,
+    "used_gb": 83.7,
+    "free_gb": 16.8
+  },
+  "reserve_gb": 8.0,
+  "dataset_budget_gb": 30.0,
+  "dataset_raw_gb": 17.85,
+  "items": [
+    {
+      "path": "dataset/raw/RDD2022/China_Drone",
+      "size_gb": 0.158,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/China_MotorBike",
+      "size_gb": 0.144,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/Czech",
+      "size_gb": 0.192,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/India",
+      "size_gb": 0.487,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/Japan",
+      "size_gb": 0.801,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/Norway",
+      "size_gb": 8.215,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/RDD2022/United_States",
+      "size_gb": 0.337,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original RDD2022 country data used by experiments"
+    },
+    {
+      "path": "dataset/raw/external/deeksha",
+      "size_gb": 5.465,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/egypt_rdd",
+      "size_gb": 0.379,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/keremberke_pothole",
+      "size_gb": 0.013,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/manot_pothole2",
+      "size_gb": 0.132,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/manot_road_damage",
+      "size_gb": 0.104,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/mwpd",
+      "size_gb": 0.643,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/potholes_rf",
+      "size_gb": 0.02,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/rupesh_pothole",
+      "size_gb": 0.106,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/external/rupesh_pothole2",
+      "size_gb": 0.653,
+      "kind": "source dataset (never auto-removed)",
+      "removable": false,
+      "reason": "original external dataset (license recorded in docs/datasets)"
+    },
+    {
+      "path": "dataset/raw/_zips",
+      "size_gb": 0.0,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "partial/complete download archives; data already extracted"
+    },
+    {
+      "path": "dataset/processed/rdd2022_extended",
+      "size_gb": 2.316,
+      "kind": "derived dataset (regenerable from sources; mostly hard links)",
+      "removable": false,
+      "reason": "rebuild with dataset/*.py; keep while experiments reference it"
+    },
+    {
+      "path": "dataset/processed/rdd2022_extended_v2",
+      "size_gb": 2.599,
+      "kind": "derived dataset (regenerable from sources; mostly hard links)",
+      "removable": false,
+      "reason": "rebuild with dataset/*.py; keep while experiments reference it"
+    },
+    {
+      "path": "dataset/processed/rdd2022_extended_v3",
+      "size_gb": 5.625,
+      "kind": "derived dataset (regenerable from sources; mostly hard links)",
+      "removable": false,
+      "reason": "rebuild with dataset/*.py; keep while experiments reference it"
+    },
+    {
+      "path": "dataset/processed/rdd2022_yolo",
+      "size_gb": 1.432,
+      "kind": "derived dataset (regenerable from sources; mostly hard links)",
+      "removable": false,
+      "reason": "rebuild with dataset/*.py; keep while experiments reference it"
+    },
+    {
+      "path": "dataset/processed/smoke",
+      "size_gb": 0.012,
+      "kind": "derived dataset (regenerable from sources; mostly hard links)",
+      "removable": false,
+      "reason": "rebuild with dataset/*.py; keep while experiments reference it"
+    },
+    {
+      "path": "models/weights",
+      "size_gb": 0.082,
+      "kind": "final artefact (never auto-removed)",
+      "removable": false,
+      "reason": "published checkpoints"
+    },
+    {
+      "path": "experiments/baseline_yolo26n/weights",
+      "size_gb": 0.01,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/bench_res/weights",
+      "size_gb": 0.038,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/rdd_yolo26n/weights",
+      "size_gb": 0.01,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/rdd_yolo26n_ext/weights",
+      "size_gb": 0.01,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/rdd_yolo26n_ext2/weights",
+      "size_gb": 0.01,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/smoke_rdd/weights",
+      "size_gb": 0.01,
+      "kind": "final artefact (never auto-removed)",
+      "removable": false,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/yolo26s_full/weights",
+      "size_gb": 0.038,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "best.pt duplicated in models/weights; last.pt only needed to resume a finished run"
+    },
+    {
+      "path": "experiments/_init",
+      "size_gb": 0.066,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "initial checkpoints rebuilt by train.py"
+    },
+    {
+      "path": "models/backup_v1.0-expD",
+      "size_gb": 0.02,
+      "kind": "final artefact (never auto-removed)",
+      "removable": false,
+      "reason": "user-requested safety copy"
+    },
+    {
+      "path": "deploy",
+      "size_gb": 0.269,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "deployment bundles rebuilt by scripts/build_hf_space.py / export_static_site.py"
+    },
+    {
+      "path": ".cache",
+      "size_gb": 1.854,
+      "kind": "regenerable cache",
+      "removable": true,
+      "reason": "downloaded wheels (re-downloadable)"
+    },
+    {
+      "path": "outputs",
+      "size_gb": 0.006,
+      "kind": "final artefact (never auto-removed)",
+      "removable": false,
+      "reason": "user detections database and uploads"
+    }
+  ],
+  "removable_total_gb": 2.31
+}

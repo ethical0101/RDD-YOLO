@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, ImageUp, Info, MapPinned, ScanSearch } from 'lucide-react'
+import { CheckCircle2, Download, ImageUp, Info, MapPinned, ScanSearch } from 'lucide-react'
 import { apiSend } from '../lib/api'
+import { downloadImage, GPS_NOTE } from '../lib/exporting'
 import { pct } from '../lib/format'
+import { loadSettings } from '../lib/settings'
 import { STATIC, asset } from '../lib/staticMode'
 import type { ImageInferenceResponse } from '../lib/types'
 import DetectionViewer from '../components/DetectionViewer'
@@ -16,8 +18,8 @@ const BROWSER_PREVIEWABLE = ['image/jpeg', 'image/jpg', 'image/pjpeg', 'image/pn
 export default function Detect() {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
-  const [conf, setConf] = useState(0.25)
-  const [save, setSave] = useState(true)
+  const [conf, setConf] = useState(() => loadSettings().defaultConf)
+  const [save, setSave] = useState(() => loadSettings().saveResults)
   const [loc, setLoc] = useState<PickedLocation>(NO_LOCATION)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,6 +62,7 @@ export default function Detect() {
     fd.append('file', file)
     fd.append('conf', String(conf))
     fd.append('save', String(save))
+    fd.append('prefer_exif', String(loadSettings().preferExif))
     if (loc.lat !== null && loc.lon !== null) {
       fd.append('latitude', String(loc.lat))
       fd.append('longitude', String(loc.lon))
@@ -134,7 +137,12 @@ export default function Detect() {
 
         <div className="space-y-6">
           <Card title="Result" subtitle={res ? `${res.detections.length} detection(s) · ${res.inference_ms.toFixed(0)} ms · model ${res.model_version}` : undefined}
-            actions={res?.saved && <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Saved #{res.inference_id}</span>}>
+            actions={res && <div className="flex items-center gap-3">
+              {res.saved && <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Saved #{res.inference_id}</span>}
+              {annotatedSrc(res) && <Button variant="secondary" className="px-2.5 py-1 text-xs"
+                onClick={() => downloadImage(annotatedSrc(res)!, `rdd_yolo_${res.inference_id ?? 'result'}_annotated.jpg`)}>
+                <Download className="h-3.5 w-3.5" /> Annotated image</Button>}
+            </div>}>
             {!preview ? (
               <EmptyState title="No image selected" icon={<ImageUp className="h-8 w-8" />}>Choose a road image to start.</EmptyState>
             ) : res ? (
@@ -192,6 +200,9 @@ export default function Detect() {
               {locSaved && <div className="px-5 pb-3 text-xs text-emerald-700">Location attached to all detections of this image.</div>}
             </Card>
           )}
+          {res && res.location && res.detections.length > 0 && (
+            <Notice><MapPinned className="mr-1 inline h-4 w-4" />{GPS_NOTE}</Notice>
+          )}
           {res && res.detections.length > 0 && (
             <Notice><Info className="mr-1 inline h-4 w-4" />Severity is a transparent heuristic (class, relative box area, confidence, repeat reports) for prioritising review — not an engineering-certified road condition rating.</Notice>
           )}
@@ -199,4 +210,10 @@ export default function Detect() {
       </div>
     </>
   )
+}
+
+/** The annotated JPEG produced with the result (base64 when not saved, stored file otherwise). */
+function annotatedSrc(r: ImageInferenceResponse): string | null {
+  if (r.annotated_base64) return `data:image/jpeg;base64,${r.annotated_base64}`
+  return asset(r.annotated_url) ?? null
 }
