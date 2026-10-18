@@ -7,7 +7,9 @@ Live at: https://<owner>.github.io/<repo>/
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
+import stat
 import subprocess
 from pathlib import Path
 
@@ -26,7 +28,8 @@ def main() -> None:
     name = args.repo.split("/")[1]
     run([str(ROOT / ".venv" / "Scripts" / "python.exe"), "scripts/export_static_site.py", "--base", f"/{name}/"], ROOT)
     if (SITE / ".git").exists():
-        shutil.rmtree(SITE / ".git")
+        # git marks object files read-only, which shutil cannot delete on Windows
+        shutil.rmtree(SITE / ".git", onexc=lambda f, path, _e: (os.chmod(path, stat.S_IWRITE), f(path)))
     run(["git", "init", "-q", "-b", "gh-pages"], SITE)
     run(["git", "add", "-A"], SITE)
     run(["git", "commit", "-q", "-m", "Deploy RDD-YOLO browser demo"], SITE)
