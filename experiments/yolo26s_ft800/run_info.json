@@ -1,0 +1,86 @@
+{
+  "experiment": "baseline",
+  "title": "Experiment F - YOLO26s fine-tune at 800px",
+  "run_name": "yolo26s_ft800",
+  "architecture_yaml": "models/architectures/yolo26-baseline.yaml",
+  "scale": "s",
+  "ultralytics_version": "8.4.174",
+  "started_utc": "2026-10-17T23:26:35.744901+00:00",
+  "hardware": {
+    "os": "Windows 11",
+    "python": "3.13.4",
+    "cpu_cores": 16,
+    "ram_gb": 15.7,
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "vram_gb": 4.0,
+    "torch_version": "2.14.1+cu130",
+    "cuda_version": "13.0"
+  },
+  "hardware_recommendation": {
+    "device": "0",
+    "batch": 8,
+    "imgsz": 800,
+    "workers": 5,
+    "amp": true,
+    "model_scale": "n",
+    "reason": "NVIDIA GeForce RTX 3050 Laptop GPU with 4.0 GB VRAM: batch 8, AMP on, scale 'n'."
+  },
+  "args": {
+    "experiment": "baseline",
+    "scale": "s",
+    "data": "dataset\\processed\\rdd2022_extended_v3\\data.yaml",
+    "epochs": 10,
+    "imgsz": 800,
+    "batch": 6,
+    "workers": 6,
+    "device": null,
+    "patience": 8,
+    "fraction": 1.0,
+    "seed": 0,
+    "name": "yolo26s_ft800",
+    "no_pretrained": false,
+    "resume": null,
+    "cache": false,
+    "non_deterministic": true,
+    "init_weights": "models\\weights\\yolo26s_full_best.pt",
+    "close_mosaic": 3,
+    "optimizer": "MuSGD",
+    "lr0": 0.001,
+    "lrf": 0.1,
+    "warmup_epochs": 0.5,
+    "title": "Experiment F - YOLO26s fine-tune at 800px",
+    "init_all_layers": false
+  },
+  "effective": {
+    "batch": 6,
+    "workers": 6,
+    "device": "0",
+    "amp": true
+  },
+  "initialisation": {
+    "fine_tuned_from": "models\\weights\\yolo26s_full_best.pt"
+  },
+  "train_time_hours": 3.804,
+  "finished_utc": "2026-10-18T03:14:51.924122+00:00",
+  "resumed": false,
+  "results": {
+    "epochs_completed": 10,
+    "best_epoch_val": {
+      "epoch": 9,
+      "precision": 0.67185,
+      "recall": 0.57163,
+      "f1": 0.6177013148583008,
+      "mAP50": 0.62985,
+      "mAP50_95": 0.33525
+    },
+    "last_epoch_val": {
+      "epoch": 10,
+      "precision": 0.67158,
+      "recall": 0.57452,
+      "f1": 0.6192699488002569,
+      "mAP50": 0.62954,
+      "mAP50_95": 0.33448
+    }
+  }
+}

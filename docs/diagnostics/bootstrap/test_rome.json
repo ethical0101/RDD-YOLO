@@ -1,0 +1,74 @@
+{
+  "data": "dataset\\processed\\rdd2022_extended_v3\\data_test_rome.yaml",
+  "split": "test",
+  "images": 634,
+  "bootstrap_resamples": 1000,
+  "iou": 0.5,
+  "models": {
+    "E": {
+      "mAP50": 0.2357,
+      "ci95": [
+        0.1939,
+        0.2815
+      ],
+      "per_class_AP50": {
+        "D00": NaN,
+        "D10": NaN,
+        "D20": NaN,
+        "D40": 0.2357
+      }
+    },
+    "F1": {
+      "mAP50": 0.2338,
+      "ci95": [
+        0.1947,
+        0.2798
+      ],
+      "per_class_AP50": {
+        "D00": NaN,
+        "D10": NaN,
+        "D20": NaN,
+        "D40": 0.2338
+      }
+    },
+    "F2": {
+      "mAP50": 0.2738,
+      "ci95": [
+        0.2278,
+        0.3297
+      ],
+      "per_class_AP50": {
+        "D00": NaN,
+        "D10": NaN,
+        "D20": NaN,
+        "D40": 0.2738
+      }
+    }
+  },
+  "paired_differences": {
+    "F1 - E": {
+      "delta_mAP50": -0.0019,
+      "ci95": [
+        -0.0245,
+        0.022
+      ],
+      "p_b_better": 0.453
+    },
+    "F2 - E": {
+      "delta_mAP50": 0.0381,
+      "ci95": [
+        0.0087,
+        0.0697
+      ],
+      "p_b_better": 0.998
+    },
+    "F2 - F1": {
+      "delta_mAP50": 0.0399,
+      "ci95": [
+        0.0066,
+        0.0764
+      ],
+      "p_b_better": 0.988
+    }
+  }
+}
