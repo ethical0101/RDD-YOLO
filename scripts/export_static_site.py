@@ -24,8 +24,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 OUT = ROOT / "deploy" / "static_site"
-WEIGHTS = ROOT / "models" / "weights" / "yolo26s_full_best.pt"
-ONNX = ROOT / "deploy" / "onnx" / "yolo26s_full_best.onnx"
+WEIGHTS = ROOT / "models" / "weights" / "yolo26s_ft800_best.pt"  # Experiment F2; keep in sync with engine.ts
+ONNX = ROOT / "deploy" / "onnx" / f"{WEIGHTS.stem}.onnx"
+IMGSZ = json.loads(WEIGHTS.with_suffix(".json").read_text())["imgsz"]  # trained resolution (800)
 
 
 def export_onnx() -> None:
@@ -39,7 +40,7 @@ def export_onnx() -> None:
     ONNX.parent.mkdir(parents=True, exist_ok=True)
     tmp = ONNX.parent / WEIGHTS.name
     shutil.copy2(WEIGHTS, tmp)  # export next to a copy so nothing is written into models/weights
-    out = Path(YOLO(str(tmp)).export(format="onnx", imgsz=640, opset=17, simplify=True, dynamic=False))
+    out = Path(YOLO(str(tmp)).export(format="onnx", imgsz=IMGSZ, opset=17, simplify=True, dynamic=False))
     out.replace(ONNX)
     tmp.unlink()
 

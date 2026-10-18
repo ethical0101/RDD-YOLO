@@ -38,7 +38,7 @@ class Detection:
 class Detector:
     """Thread-safe wrapper around an Ultralytics checkpoint."""
 
-    def __init__(self, weights: str | Path, device: str | None = None, imgsz: int = 640):
+    def __init__(self, weights: str | Path, device: str | None = None, imgsz: int | None = None):
         register_custom_modules()  # required before unpickling RDD-YOLO checkpoints
         from ultralytics import YOLO
 
@@ -51,13 +51,14 @@ class Detector:
 
             device = "0" if torch.cuda.is_available() else "cpu"
         self.device = device
-        self.imgsz = imgsz
         self._lock = threading.Lock()
         names = self.model.names
         if [names[i] for i in sorted(names)] != CLASS_CODES:
             raise ValueError(f"Checkpoint classes {names} do not match expected {CLASS_CODES}")
         meta_file = self.weights.with_suffix(".json")
         self.meta = json.loads(meta_file.read_text()) if meta_file.exists() else {}
+        # Default to the resolution the checkpoint was trained at (e.g. 800 px for Experiment F2).
+        self.imgsz = int(imgsz or self.meta.get("imgsz") or 640)
 
     @property
     def info(self) -> dict:

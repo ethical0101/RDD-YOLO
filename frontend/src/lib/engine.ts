@@ -1,6 +1,6 @@
 /**
  * In-browser inference with ONNX Runtime Web (static deployment).
- * Mirrors the server pipeline: letterbox to 640 (pad 114) -> YOLO26 head [1, 8, 8400]
+ * Mirrors the server pipeline: letterbox to SIZE (pad 114) -> YOLO26 head [1, 8, N] (N = 13125 anchors at 800 px)
  * (cx, cy, w, h + 4 class scores) -> confidence filter -> class-wise NMS (IoU 0.7) -> map to image.
  * Verified against the PyTorch model: identical classes/confidences, boxes within 1 px.
  */
@@ -10,7 +10,9 @@ import type { ClassCode, DetectionResult, SeverityLevel } from './types'
 
 const CODES: ClassCode[] = ['D00', 'D10', 'D20', 'D40']
 const NAMES: Record<ClassCode, string> = { D00: 'Longitudinal Crack', D10: 'Transverse Crack', D20: 'Alligator Crack', D40: 'Pothole' }
-const SIZE = 640
+/** Served model: Experiment F2 (YOLO26s fine-tuned at 800 px), exported by scripts/export_static_site.py. */
+export const MODEL_VERSION = 'yolo26s_ft800_best'
+const SIZE = 800
 
 ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/'
 ort.env.wasm.numThreads = 1 // GitHub Pages cannot enable cross-origin isolation (needed for threads)
@@ -23,7 +25,7 @@ export function loadModel(): Promise<ort.InferenceSession> {
   if (session) return Promise.resolve(session)
   if (!loading) {
     loading = (async () => {
-      const url = asset('/data/model/yolo26s_full_best.onnx')!
+      const url = asset(`/data/model/${MODEL_VERSION}.onnx`)!
       const providers: string[][] = 'gpu' in navigator ? [['webgpu'], ['wasm']] : [['wasm']]
       let last: unknown
       for (const ep of providers) {
@@ -88,8 +90,9 @@ export async function detect(source: CanvasImageSource & { width: number; height
   const t0 = performance.now()
   const out = await s.run({ [s.inputNames[0]]: new ort.Tensor('float32', input, [1, 3, SIZE, SIZE]) })
   const ms = performance.now() - t0
-  const data = out[s.outputNames[0]].data as Float32Array
-  const n = 8400
+  const t = out[s.outputNames[0]]
+  const data = t.data as Float32Array
+  const n = t.dims[2]
   const cand: { b: number[]; c: number; s: number }[] = []
   for (let i = 0; i < n; i++) {
     let best = 0, k = 0

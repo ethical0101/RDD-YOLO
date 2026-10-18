@@ -1,7 +1,7 @@
 """Render the GitHub social preview card (1280x640) -> docs/social-preview.png.
 
 The four tiles are real detections of the served YOLO26s model on held-out demo images (demo_images/);
-the metric shown is read from experiments/yolo26s_full/eval_test/metrics.json.
+the metric shown is read from experiments/yolo26s_ft800/eval_test/metrics.json.
 Usage: .venv\\Scripts\\python scripts\\make_social_preview.py
 """
 from __future__ import annotations
@@ -53,7 +53,7 @@ def tile(det: Detector, name: str, size: int) -> Image.Image:
 
 
 def main() -> None:
-    m = json.loads((ROOT / "experiments" / "yolo26s_full" / "eval_test" / "metrics.json").read_text())
+    m = json.loads((ROOT / "experiments" / "yolo26s_ft800" / "eval_test" / "metrics.json").read_text())
     map50 = 100 * m["overall"]["mAP50"]
 
     card = Image.new("RGB", (W, H), (11, 15, 25))
@@ -67,7 +67,7 @@ def main() -> None:
 
     # --- right: 2x2 real detections (inside the 80 px safe border)
     size, gap, x0, y0 = 226, 14, 714, 94
-    det = Detector(ROOT / "models" / "weights" / "yolo26s_full_best.pt")
+    det = Detector(ROOT / "models" / "weights" / "yolo26s_ft800_best.pt")
     for i, (name, caption) in enumerate(TILES):
         t = tile(det, name, size)
         x, y = x0 + (i % 2) * (size + gap), y0 + (i // 2) * (size + gap)

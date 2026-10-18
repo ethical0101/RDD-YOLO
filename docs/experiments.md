@@ -136,7 +136,7 @@ Unmodified YOLO26**s** (s scale) initialised with the official COCO weights in *
 | Pavement-distress sources (new) (1803 imgs) | mAP@50 | 22.96 | 58.96 | +36.00 |
 | Pavement-distress sources (new) (1803 imgs) | mAP@50-95 | 10.61 | 31.14 | +20.53 |
 
-Size/speed: 2,415,600 → 9,950,960 parameters, 4.97 → 19.37 MB, 83.7 → 70.7 FPS end-to-end (batch 1). **Experiment E is the model served by the application** (`models/weights/yolo26s_full_best.pt`). D and E differ in architecture, scale, initialisation, data and epochs at once, so the comparison shows the overall effect, not the contribution of any single factor.
+Size/speed: 2,415,600 → 9,950,960 parameters, 4.97 → 19.37 MB, 83.7 → 70.7 FPS end-to-end (batch 1). Experiment E was the served model until Experiment F2 (YOLO26s fine-tuned at 800 px, `models/weights/yolo26s_ft800_best.pt`, 64.23 % mAP@50) replaced it; see [Experiment F results](diagnostics/EXPERIMENT_F_RESULTS.md). D and E differ in architecture, scale, initialisation, data and epochs at once, so the comparison shows the overall effect, not the contribution of any single factor.
 
 ## Generated artefacts
 

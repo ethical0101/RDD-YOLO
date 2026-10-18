@@ -5,14 +5,13 @@
  */
 import exifr from 'exifr'
 import { get, set } from 'idb-keyval'
-import { backend, detect, loadModel } from './engine'
+import { backend, detect, loadModel, MODEL_VERSION } from './engine'
 import { asset } from './staticMode'
 import type { ClassCode, DetectionResult, Inference, StoredDetection } from './types'
 
 const CODES: ClassCode[] = ['D00', 'D10', 'D20', 'D40']
 const NAMES: Record<ClassCode, string> = { D00: 'Longitudinal Crack', D10: 'Transverse Crack', D20: 'Alligator Crack', D40: 'Pothole' }
 const COLORS: Record<ClassCode, string> = { D00: '#2a78d6', D10: '#1baf7a', D20: '#4a3aa7', D40: '#eb6834' }
-const MODEL_VERSION = 'yolo26s_full_best'
 const KEY = 'rdd-yolo-db-v1'
 
 interface DB { nextInf: number; nextDet: number; inferences: Inference[] }

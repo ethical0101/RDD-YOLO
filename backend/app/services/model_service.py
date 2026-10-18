@@ -10,8 +10,8 @@ from ..core.config import get_settings
 
 log = logging.getLogger(__name__)
 
-# Preference when no checkpoint is configured: Exp E (YOLO26s), Exp D (extended v2), Exp C (extended), RDD-YOLO (Exp B), baseline.
-_PREFERRED = ["yolo26s_full_best.pt", "rdd_yolo26n_ext2_best.pt", "rdd_yolo26n_ext_best.pt", "rdd_yolo26n_best.pt", "rdd_yolo26s_best.pt", "baseline_yolo26n_best.pt", "baseline_yolo26s_best.pt"]
+# Preference when no checkpoint is configured: Exp F2 (YOLO26s, 800 px), Exp E (YOLO26s), Exp D (extended v2), Exp C (extended), RDD-YOLO (Exp B), baseline.
+_PREFERRED = ["yolo26s_ft800_best.pt", "yolo26s_full_best.pt", "rdd_yolo26n_ext2_best.pt", "rdd_yolo26n_ext_best.pt", "rdd_yolo26n_best.pt", "rdd_yolo26s_best.pt", "baseline_yolo26n_best.pt", "baseline_yolo26s_best.pt"]
 
 
 class ModelService:
@@ -55,7 +55,7 @@ class ModelService:
                 log.warning(self._error)
                 return None
             try:
-                self._detector = Detector(path, device=s.model_device or None, imgsz=s.model_imgsz)
+                self._detector = Detector(path, device=s.model_device or None, imgsz=s.model_imgsz or None)
                 self._error = None
                 log.info("Loaded model %s on %s", path.name, self._detector.device)
             except Exception as exc:  # keep API alive, report the real error

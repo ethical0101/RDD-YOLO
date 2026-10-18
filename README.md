@@ -10,7 +10,7 @@ attaches real GPS locations, and maps every detection on OpenStreetMap — train
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-ethical0101.github.io%2FRDD--YOLO-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://ethical0101.github.io/RDD-YOLO/)
 
-[![mAP@50](https://img.shields.io/badge/RDD2022_test_mAP@50-62.45%25-blue)](docs/experiments.md)
+[![mAP@50](https://img.shields.io/badge/RDD2022_test_mAP@50-64.23%25-blue)](docs/experiments.md)
 [![Model](https://img.shields.io/badge/model-YOLO26s-orange)](https://docs.ultralytics.com/)
 [![Ultralytics](https://img.shields.io/badge/Ultralytics-8.4.174-111F68)](https://github.com/ultralytics/ultralytics)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.14_CUDA_13-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
@@ -68,32 +68,39 @@ never leave your browser (stored in IndexedDB). For GPU speed and the Python bac
 
 Measured on held-out test sets (no test image is ever used for training; see [leakage control](docs/datasets.md#leakage-control)).
 
-### Served model — Experiment E (YOLO26s), original RDD2022 test split (2,023 images)
+### Served model — Experiment F2 (YOLO26s fine-tuned at 800 px), original RDD2022 test split (2,023 images)
 
 | Metric | Value |
 |---|---|
-| **mAP@50** | **62.45 %** |
-| mAP@50-95 | 32.36 % |
-| Precision | 64.22 % |
-| Recall | 57.75 % |
-| F1 | 60.81 % |
-| Per class mAP@50 | D00 70.0 % · D10 61.6 % · D20 66.4 % · D40 51.8 % |
-| Size / speed | 9.95 M params · 19.4 MB · 71 FPS (RTX 3050, batch 1) |
+| **mAP@50** | **64.23 %** (63.6 % on the 1,804-image subset without near-duplicates of training images) |
+| mAP@50-95 | 33.39 % |
+| Precision | 65.81 % |
+| Recall | 58.82 % |
+| F1 | 62.12 % |
+| Per class mAP@50 | D00 72.2 % · D10 62.1 % · D20 68.5 % · D40 54.2 % |
+| Size / speed | 9.95 M params · 19.4 MB · 800 px input · 50 FPS (RTX 3050, batch 1) |
+
+F2 continues Experiment E for 10 epochs at 800 px. Paired bootstrap (1,000 resamples): +2.4 pp mAP@50 over E on the
+RDD2022 test (95 % CI +1.5 to +3.4) and +3.8 pp on a new-country test set from Rome (CI +0.9 to +7.0). Details:
+[Experiment F results](docs/diagnostics/EXPERIMENT_F_RESULTS.md) · [accuracy diagnosis](docs/diagnostics/ACCURACY_DIAGNOSIS.md) ·
+[Rome generalization](docs/diagnostics/ROME_GENERALIZATION.md).
 
 ### All experiments (mAP@50)
 
-| Test set | A Baseline YOLO26n | B RDD-YOLO26n | C + data | D + close-up | **E YOLO26s** |
-|---|---|---|---|---|---|
-| Original RDD2022 test (2,023) | 59.66 % | 59.46 % | 60.50 % | 61.02 % | **62.45 %** |
-| Norway + China Drone (532) | – | 12.92 % | 33.37 % | 33.71 % | **40.85 %** |
-| Ground-level potholes (221) | – | 18.34 % | 44.61 % | 55.56 % | **58.83 %** |
-| Close-up potholes (235) | – | 21.41 % | 38.06 % | 63.88 % | **67.17 %** |
-| Pavement-distress sources (1,803) | – | – | – | 22.96 % | **58.96 %** |
+| Test set | A Baseline YOLO26n | B RDD-YOLO26n | C + data | D + close-up | E YOLO26s | **F2 YOLO26s 800 px** |
+|---|---|---|---|---|---|---|
+| Original RDD2022 test (2,023) | 59.66 % | 59.46 % | 60.50 % | 61.02 % | 62.45 % | **64.23 %** |
+| Norway + China Drone (532) | – | 12.92 % | 33.37 % | 33.71 % | 40.85 % | **43.72 %** |
+| Ground-level potholes (221) | – | 18.34 % | 44.61 % | 55.56 % | 58.83 % | **59.79 %** |
+| Close-up potholes (235) | – | 21.41 % | 38.06 % | 63.88 % | **67.17 %** | 66.32 % |
+| Pavement-distress sources (1,803) | – | – | – | 22.96 % | 58.96 % | **59.31 %** |
 
 * **A vs B (paper replication):** the RDD-YOLO modifications matched the baseline's accuracy (differences < 0.3 pp)
   with 3.6 % fewer parameters but 8 % lower FPS at nano scale / 40 epochs — the paper's gains (YOLOv8x, 180 epochs)
   were not reproduced in this setting, and this is reported as measured.
 * **C → E:** more (de-duplicated, licensed) data, then a larger model, improved every test set.
+* **E → F2:** training longer (+1.5 pp, significant) and at 800 px (+0.8 pp in domain, +4 pp on the Rome set) helps small damage; close-up potholes dipped 0.9 pp.
+* **New country (Rome, 634 images, potholes only):** E 25.7 % → F2 28.3 % mAP@50 — domain shift remains the main weakness.
 * For context: the RDD-YOLO paper reports 62.5 % mAP@50 with YOLOv8x on an RTX 4090; setups differ, so numbers
   are not directly comparable.
 

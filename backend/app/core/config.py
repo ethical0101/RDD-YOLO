@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     # Checkpoint used for inference. Empty -> auto-select the best available in models/weights.
     model_weights: str = ""
     model_device: str = ""  # "" = auto (CUDA if available), "cpu", "0"
-    model_imgsz: int = 640
+    model_imgsz: int = 0  # 0 = the checkpoint's training resolution
     default_confidence: float = 0.25
 
     outputs_dir: Path = PROJECT_ROOT / "outputs"
